@@ -3,14 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package limmen.hangman_client.util;
+package limmen.hangman_server.startup;
 
 /**
  *
  * @author kim
  */
-public interface CommunicationProtocol {
-    
-    
+public class Startup {
     
 }

@@ -9,8 +9,6 @@ package limmen.hangman_client.util;
  *
  * @author kim
  */
-public interface CommunicationProtocol {
-    
-    
+public class GameOver {
     
 }
