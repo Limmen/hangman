@@ -17,15 +17,13 @@ public class Listener implements Runnable {
 
     private ServerSocket serverSocket;
     private int PORT = 9999;
-    private ChatServer server;
     private boolean running;
     
     /**
      *
      * @param server
      */
-    public Listener(ChatServer server){
-        this.server = server;
+    public Listener(){
     }
     
     /**
@@ -40,7 +38,7 @@ public class Listener implements Runnable {
             while (running)
             {
                 Socket clientSocket = serverSocket.accept();
-                new Thread(new ClientHandler(clientSocket, server)).start();
+                new Thread(new ClientHandler(clientSocket)).start();
             }            
         } catch (IOException e)
         {

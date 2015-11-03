@@ -1,74 +1,65 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+* To change this license header, choose License Headers in Project Properties.
+* To change this template file, choose Tools | Templates
+* and open the template in the editor.
+*/
 package limmen.hangman_server.server;
 
+import com.sun.xml.internal.ws.api.message.Message;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OptionalDataException;
 import java.net.Socket;
-import util.Message;
-import util.RegularMessage;
-
+import limmen.hangman_server.util.CommunicationProtocol;
+import limmen.hangman_server.util.Guess;
+import limmen.hangman_server.util.Restart;
+import limmen.hangman_server.util.Start;
 /**
  *
  * @author kim
  */
 public class ClientHandler implements Runnable {
-
+    
     private ObjectInputStream in;
     private ObjectOutputStream out = null;
     private final Socket clientSocket;
-    private final ChatServer server;
     private boolean running;
-    private ChatId id;
     
     /**
      *
      * @param clientSocket
      * @param server
      */
-    public ClientHandler(Socket clientSocket, ChatServer server){
-        this.clientSocket = clientSocket;        
-        this.server = server;
+    public ClientHandler(Socket clientSocket){
+        this.clientSocket = clientSocket;
     }
-
+    
     /**
      *
      */
     @Override
-    public void run() {        
+    public void run() {
         running = true;
         setup();
-        id = regUser();
         
         while(running){
-            Message msg = readMsg();
+            CommunicationProtocol msg = read();
             if(msg != null){
-                Message newMsg = new RegularMessage(msg.getString(), msg.getName(), server.getUsers());
-                server.broadcast(newMsg,id);               
+                
+                if(msg instanceof Guess){
+                    
+                }
+                if(msg instanceof Restart){
+                    
+                }
+                if(msg instanceof Start){
+                    
                 }
                 
             }
+            
         }
-                                     
-    
-    ChatId regUser(){
-        RegularMessage msg = new RegularMessage("Welcome to the chat \nwhat is your username?", "Server", server.getUsers());
-        respond(msg);
-        while(true){
-            Object message = readMsg();
-            if(message != null){                
-                    Message user = (Message) message;
-                    return server.regUser(this, user.getString());
-            }
-            else{
-                return null;
-            }
-        }                
     }
     
     void setup(){
@@ -83,7 +74,7 @@ public class ClientHandler implements Runnable {
         }
     }
     
-    Message readMsg(){
+    CommunicationProtocol read(){
         Object msg;
         try {
             msg = in.readObject();
@@ -101,8 +92,8 @@ public class ClientHandler implements Runnable {
             return null;
         }
         
-        if (msg instanceof Message) {            
-            return (Message) msg;
+        if (msg instanceof CommunicationProtocol) {
+            return (CommunicationProtocol) msg;
         }
         else{
             return null;
@@ -113,15 +104,15 @@ public class ClientHandler implements Runnable {
      *
      * @param msg
      */
-    public void respond(Message msg){      
-        try {            
+    public void respond(Message msg){
+        try {
             out.writeObject(msg);
             out.flush();
         } catch (IOException e) {
             System.out.println(e.toString());
             cleanUp();
             terminate();
-        }          
+        }
     }
     
     /**
@@ -141,8 +132,6 @@ public class ClientHandler implements Runnable {
      *
      */
     public void terminate(){
-        if(id != null)
-            server.deRegUser(id);
         this.running = false;
     }
     

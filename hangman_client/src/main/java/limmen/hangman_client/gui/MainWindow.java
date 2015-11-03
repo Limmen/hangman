@@ -6,6 +6,7 @@
 package limmen.hangman_client.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,12 +20,15 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import limmen.hangman_client.client.ConnectWorker;
 import limmen.hangman_client.client.DisconnectWorker;
 import limmen.hangman_client.client.ReadWorker;
 import limmen.hangman_client.client.WriteWorker;
+import limmen.hangman_client.client.model.HangMan;
 import limmen.hangman_client.util.Congratulations;
 import limmen.hangman_client.util.GameOver;
 import limmen.hangman_client.util.Result;
@@ -44,9 +48,11 @@ public class MainWindow {
     private JPanel logPanel;
     private JPanel guessPanel;
     private JPanel connectedPanel;
+    private JTextArea log;
     
     private final Font Plain = new Font("Serif", Font.PLAIN, 12);
     private final Font Title = new Font("Serif", Font.PLAIN, 14);
+    private final Font Word = new Font("Serif", Font.PLAIN, 20);
     private final Font PBold = Plain.deriveFont(Plain.getStyle() | Font.BOLD);
     
     private boolean connected;
@@ -59,6 +65,7 @@ public class MainWindow {
     private ConnectWorker connectWorker;
     private WriteWorker writeWorker;
     private DisconnectWorker disconnectWorker;
+    private HangMan game;
     
     public MainWindow(){
         connected = false;
@@ -119,19 +126,87 @@ public class MainWindow {
         
     }
     private void createGameFrame(){
+        gameFrame = new JFrame("HomeWork 1 ID2212 | HangMan");
+        gameFrame.setLayout(new MigLayout());
+        JPanel container = new JPanel(new MigLayout("wrap 3"));
+        createScorePanel();
+        createGamePanel();
+        createLogPanel();
+        createGuessPanel();
+        createConnectedPanel();
+        container.add(scorePanel, "span 1");
+        container.add(gamePanel, "span 1");
+        container.add(logPanel, "span 1");
+        container.add(guessPanel, "span 3");
+        container.add(connectedPanel, "span 3");
+        gameFrame.add(container, BorderLayout.CENTER); 
         
     }        
     private void createScorePanel(){
+        JLabel lbl;
+        scorePanel = new JPanel(new MigLayout("wrap 2"));
+        lbl = new JLabel("Attempts left: ");
+        lbl.setFont(PBold);        
+        scorePanel.add(lbl, "span 1");
+        lbl = new JLabel(Integer.toString(game.getAttemptsLeft()));
+        lbl.setFont(Plain);
+        scorePanel.add(lbl, "span 1");
+        lbl = new JLabel("Score: ");
+        lbl.setFont(PBold);
+        scorePanel.add(lbl, "span 1");
+        lbl = new JLabel(Integer.toString(game.getScore()));
+        lbl.setFont(Plain);
+        scorePanel.add(lbl, "span 1");
         
     }
     private void createGamePanel(){
+        JLabel lbl;
+        gamePanel = new JPanel(new MigLayout("wrap 1"));
+        lbl = new JLabel(game.getWord());
+        lbl.setFont(Word);
+        gamePanel.add(lbl, "span 1");
         
     }
     private void createLogPanel(){
-        
+        JLabel lbl;
+        logPanel = new JPanel(new MigLayout("wrap 1"));
+        lbl = new JLabel("Game log");
+        lbl.setFont(Plain);
+        logPanel.add(lbl, "span 1");
+        log = new JTextArea("");
+        log.setLineWrap(true);
+        log.setEditable(false);
+        log.setFont(Plain);
+        JScrollPane logPane = new JScrollPane(log);
+        logPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        logPane.setPreferredSize(new Dimension(250, 250));
+        logPanel.add(logPane, "span 1");
+      
     }
     private void createGuessPanel(){
-        
+        guessPanel = new JPanel(new MigLayout("wrap 1"));
+        JTextField guessField = new JTextField(50);
+        guessField.setFont(Plain);
+        guessPanel.add(guessField);
+        guessPanel.add(guessField);
+        JButton guessButton = new JButton("Guess");
+        guessButton.setFont(Title);
+        guessButton.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent arg0)
+            {
+                try {
+                    //makeGuess();
+                }
+                catch(Exception e)
+                {
+                    
+                }
+                
+            }
+        });        
+        guessPanel.add(guessButton, "span 1");
     }
     private void createConnectedPanel(){
         
@@ -154,7 +229,7 @@ public class MainWindow {
         }
     }
     private void showGameFrame(){
-        if(gameFrame != null)
+        if(connectFrame != null)
             connectFrame.setVisible(false);
         if(gameFrame != null){
             gameFrame.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -174,16 +249,20 @@ public class MainWindow {
     
     
     private void connect(String host, int port){
-        
+        System.out.println("connect");
+        connectWorker = new ConnectWorker(this, port, host);
+        connectWorker.execute();
     }
     
     public void connected(String host, int port, Socket clientSocket, ObjectInputStream in, ObjectOutputStream out){
+        System.out.println("Connected");
         this.hostname = host;
         this.port = port;
         this.connected = true;
         this.clientSocket = clientSocket;
         this.in = in;
         this.out = out;
+        this.game = new HangMan();
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -203,7 +282,12 @@ public class MainWindow {
     }
     public void GameOver(GameOver go){
         
-    } 
+    }            
+    public void setGameState(HangMan game){
+        this.game = game;
+        createScorePanel();
+        createGamePanel();
+    }
     private void disconnect(){
         if(connectWorker != null)
             connectWorker.cancel(true);

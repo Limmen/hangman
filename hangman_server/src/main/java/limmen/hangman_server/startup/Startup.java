@@ -5,10 +5,21 @@
  */
 package limmen.hangman_server.startup;
 
+import limmen.hangman_server.server.Listener;
+
 /**
  *
  * @author kim
  */
 public class Startup {
+    
+    
+    public Startup(){
+        
+    }
+    
+    public static void main(String[] args){
+        new Thread(new Listener()).start();
+    }
     
 }

@@ -23,7 +23,6 @@ import limmen.hangman_client.util.Result;
  */
 public class ReadWorker extends SwingWorker <Boolean, Integer> {
     
-    private final JTextArea area;
     private final ObjectInputStream in;
     private boolean running;
     private final MainWindow window;
@@ -57,7 +56,7 @@ public class ReadWorker extends SwingWorker <Boolean, Integer> {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            window.updateGame();
+                            window.updateGame((Result) msg);
                         }
                     });
                 }
@@ -65,7 +64,7 @@ public class ReadWorker extends SwingWorker <Boolean, Integer> {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            window.Congratulations();
+                            window.Congratulations((Congratulations) msg);
                         }
                     });
                 }
@@ -73,7 +72,7 @@ public class ReadWorker extends SwingWorker <Boolean, Integer> {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            window.GameOver();
+                            window.GameOver((GameOver) msg);
                         }
                     });
                 }
