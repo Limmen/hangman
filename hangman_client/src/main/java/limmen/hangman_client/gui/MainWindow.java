@@ -29,9 +29,12 @@ import limmen.hangman_client.client.DisconnectWorker;
 import limmen.hangman_client.client.ReadWorker;
 import limmen.hangman_client.client.WriteWorker;
 import limmen.hangman_client.client.model.HangMan;
-import limmen.hangman_client.util.Congratulations;
-import limmen.hangman_client.util.GameOver;
-import limmen.hangman_client.util.Result;
+import limmen.hangman.util.CommunicationProtocol;
+import limmen.hangman.util.Congratulations;
+import limmen.hangman.util.GameOver;
+import limmen.hangman.util.Guess;
+import limmen.hangman.util.Result;
+import limmen.hangman.util.Start;
 import net.miginfocom.swing.MigLayout;
 
 /**
@@ -46,13 +49,12 @@ public class MainWindow {
     private JPanel scorePanel;
     private JPanel gamePanel;
     private JPanel logPanel;
-    private JPanel guessPanel;
     private JPanel connectedPanel;
     private JTextArea log;
     
     private final Font Plain = new Font("Serif", Font.PLAIN, 12);
     private final Font Title = new Font("Serif", Font.PLAIN, 14);
-    private final Font Word = new Font("Serif", Font.PLAIN, 20);
+    private final Font Word = new Font("Serif", Font.PLAIN, 25);
     private final Font PBold = Plain.deriveFont(Plain.getStyle() | Font.BOLD);
     
     private boolean connected;
@@ -132,13 +134,11 @@ public class MainWindow {
         createScorePanel();
         createGamePanel();
         createLogPanel();
-        createGuessPanel();
         createConnectedPanel();
         container.add(scorePanel, "span 1");
-        container.add(gamePanel, "span 1");
+        container.add(gamePanel, "span 1, gapleft 50, gapright 50");
         container.add(logPanel, "span 1");
-        container.add(guessPanel, "span 3");
-        container.add(connectedPanel, "span 3");
+        container.add(connectedPanel, "span 3, gaptop 60");
         gameFrame.add(container, BorderLayout.CENTER); 
         
     }        
@@ -157,41 +157,9 @@ public class MainWindow {
         lbl = new JLabel(Integer.toString(game.getScore()));
         lbl.setFont(Plain);
         scorePanel.add(lbl, "span 1");
-        
-    }
-    private void createGamePanel(){
-        JLabel lbl;
-        gamePanel = new JPanel(new MigLayout("wrap 1"));
-        lbl = new JLabel(game.getWord());
-        lbl.setFont(Word);
-        gamePanel.add(lbl, "span 1");
-        
-    }
-    private void createLogPanel(){
-        JLabel lbl;
-        logPanel = new JPanel(new MigLayout("wrap 1"));
-        lbl = new JLabel("Game log");
-        lbl.setFont(Plain);
-        logPanel.add(lbl, "span 1");
-        log = new JTextArea("");
-        log.setLineWrap(true);
-        log.setEditable(false);
-        log.setFont(Plain);
-        JScrollPane logPane = new JScrollPane(log);
-        logPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        logPane.setPreferredSize(new Dimension(250, 250));
-        logPanel.add(logPane, "span 1");
-      
-    }
-    private void createGuessPanel(){
-        guessPanel = new JPanel(new MigLayout("wrap 1"));
-        JTextField guessField = new JTextField(50);
-        guessField.setFont(Plain);
-        guessPanel.add(guessField);
-        guessPanel.add(guessField);
-        JButton guessButton = new JButton("Guess");
-        guessButton.setFont(Title);
-        guessButton.addActionListener(new ActionListener()
+        JButton restartButton = new JButton("Restart");
+        restartButton.setFont(Title);
+        restartButton.addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent arg0)
@@ -206,9 +174,96 @@ public class MainWindow {
                 
             }
         });        
-        guessPanel.add(guessButton, "span 1");
+        scorePanel.add(restartButton, "span 2, gaptop 60");    
+        
     }
+    private void createGamePanel(){
+        JLabel lbl;
+        gamePanel = new JPanel(new MigLayout("wrap 1"));        
+        JPanel hangManPanel = new JPanel(new MigLayout("wrap 1"));
+        System.out.println("Setting game getWord: " + game.getWord());
+        lbl = new JLabel(game.getWord());
+        lbl.setFont(Word);
+        hangManPanel.add(lbl, "span 1, align center");
+        JPanel guessPanel = new JPanel(new MigLayout("wrap 1"));
+        final JTextField guessField = new JTextField(20);
+        guessField.setFont(Plain);
+        guessPanel.add(guessField, "span 1");
+        JButton guessButton = new JButton("Guess");
+        guessButton.setFont(Title);
+        guessButton.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent arg0)
+            {
+                try {
+                    makeGuess(guessField.getText());
+                }
+                catch(Exception e)
+                {
+                    
+                }
+                
+            }
+        });        
+        guessPanel.add(guessButton, "span 1");        
+        gamePanel.add(hangManPanel, "span 1");
+        gamePanel.add(guessPanel, "span 1, gaptop 60");
+        
+        
+    }
+    private void createLogPanel(){
+        JLabel lbl;
+        logPanel = new JPanel(new MigLayout("wrap 1"));
+        lbl = new JLabel("Game log");
+        lbl.setFont(Plain);
+        logPanel.add(lbl, "span 1");
+        log = new JTextArea("");
+        log.setLineWrap(true);
+        log.setEditable(false);
+        log.setFont(Plain);
+        JScrollPane logPane = new JScrollPane(log);
+        logPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        logPane.setPreferredSize(new Dimension(150, 250));
+        logPanel.add(logPane, "span 1");
+      
+    }   
     private void createConnectedPanel(){
+        JLabel lbl;
+        connectedPanel = new JPanel(new MigLayout("wrap 2"));
+        lbl = new JLabel("Connected to: ");
+            lbl.setFont(Title);
+            connectedPanel.add(lbl, "span 2, gapbottom 10, align center");
+            lbl = new JLabel("Host: ");
+            lbl.setFont(PBold);
+            connectedPanel.add(lbl, "span 1");
+            lbl = new JLabel(this.hostname);
+            lbl.setFont(Plain);
+            connectedPanel.add(lbl, "span 1");
+            lbl = new JLabel("Port: ");
+            lbl.setFont(PBold);
+            connectedPanel.add(lbl, "span 1");
+            lbl = new JLabel(Integer.toString(this.port));
+            lbl.setFont(Plain);
+            connectedPanel.add(lbl, "span 1");
+            JButton disconnect = new JButton("Disconnect");
+            disconnect.setFont(Title);
+            disconnect.addActionListener(new ActionListener()
+            {
+                @Override
+                public void actionPerformed(ActionEvent arg0)
+                {
+                    try {
+                        disconnect();
+                    }
+                    catch(Exception e)
+                    {
+                        
+                    }
+                    
+                }
+            });
+            connectedPanel.add(disconnect, "span 2, gaptop 5");
         
     }   
     private void showConnectFrame(){
@@ -249,13 +304,11 @@ public class MainWindow {
     
     
     private void connect(String host, int port){
-        System.out.println("connect");
         connectWorker = new ConnectWorker(this, port, host);
         connectWorker.execute();
     }
     
     public void connected(String host, int port, Socket clientSocket, ObjectInputStream in, ObjectOutputStream out){
-        System.out.println("Connected");
         this.hostname = host;
         this.port = port;
         this.connected = true;
@@ -272,10 +325,19 @@ public class MainWindow {
         });
         readWorker = new ReadWorker(in, this);
         readWorker.execute();
+        writeWorker = new WriteWorker(out, (CommunicationProtocol) new Start());
+        writeWorker.execute();
     }
     
     public void updateGame(Result result){
-        
+        log.setText(log.getText() + result.getLog() + "\n");
+        game.setScore(result.getScore());
+        game.setAttempts(result.getAttemptsleft());
+        System.out.println("state: " + result.getState());
+        game.setWord(result.getState());
+        createScorePanel();
+        createGamePanel();
+        gameFrame.pack();        
     }
     public void Congratulations(Congratulations con){
         
@@ -283,10 +345,9 @@ public class MainWindow {
     public void GameOver(GameOver go){
         
     }            
-    public void setGameState(HangMan game){
-        this.game = game;
-        createScorePanel();
-        createGamePanel();
+    private void makeGuess(String guess){
+        writeWorker = new WriteWorker(out, (CommunicationProtocol) new Guess(guess));
+        writeWorker.execute();
     }
     private void disconnect(){
         if(connectWorker != null)

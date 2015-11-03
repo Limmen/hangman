@@ -3,13 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package limmen.hangman_client.util;
+package limmen.hangman.util;
+
+import java.io.Serializable;
 
 /**
  *
  * @author kim
  */
-public class Guess implements CommunicationProtocol {
+public class Guess implements CommunicationProtocol, Serializable {
     
     private String guess;
     

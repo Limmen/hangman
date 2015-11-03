@@ -8,14 +8,13 @@ package limmen.hangman_client.client;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.OptionalDataException;
-import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import limmen.hangman_client.gui.MainWindow;
-import limmen.hangman_client.util.CommunicationProtocol;
-import limmen.hangman_client.util.Congratulations;
-import limmen.hangman_client.util.GameOver;
-import limmen.hangman_client.util.Result;
+import limmen.hangman.util.CommunicationProtocol;
+import limmen.hangman.util.Congratulations;
+import limmen.hangman.util.GameOver;
+import limmen.hangman.util.Result;
 
 /**
  *
@@ -49,9 +48,7 @@ public class ReadWorker extends SwingWorker <Boolean, Integer> {
         running = true;
         while(running){
             msg = read();
-            if(msg != null){
-                
-                
+            if(msg != null){                                
                 if(msg instanceof Result){
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override

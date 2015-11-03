@@ -13,13 +13,22 @@ public class HangMan {
     
     private int attemptsleft;
     private int score;
+    private String word;
     
     public HangMan(){
         attemptsleft = 5;
         score = 0;
+        word = "_ _ _ _ _";
     }
-    
-    
+    public HangMan(int attempts, int score, String word){
+        attemptsleft = attempts;
+        this.score = score;
+        this.word  = word;
+        
+    }
+    public void setWord(String word){
+        this.word = word;
+    }
     public void setAttempts(int attempts){
         this.attemptsleft = attempts;
     }
@@ -35,6 +44,6 @@ public class HangMan {
         return this.score;
     }
     public String getWord(){
-        return "------";
+        return word;
     }   
 }

@@ -3,14 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package limmen.hangman_server.util;
+package limmen.hangman.util;
+
+import java.io.Serializable;
 
 /**
  *
  * @author kim
  */
-public interface CommunicationProtocol {
+public class Start implements CommunicationProtocol, Serializable {
     
     
+    public Start(){
+        
+    }
     
 }

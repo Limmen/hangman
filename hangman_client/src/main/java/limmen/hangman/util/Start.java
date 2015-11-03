@@ -3,12 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package limmen.hangman_client.util;
+package limmen.hangman.util;
+
+import java.io.Serializable;
 
 /**
  *
  * @author kim
  */
-public class GameOver {
+public class Start implements CommunicationProtocol, Serializable {
+    
+    
+    public Start(){
+        
+    }
     
 }

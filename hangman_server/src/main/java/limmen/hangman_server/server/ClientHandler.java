@@ -5,16 +5,17 @@
 */
 package limmen.hangman_server.server;
 
-import com.sun.xml.internal.ws.api.message.Message;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OptionalDataException;
 import java.net.Socket;
-import limmen.hangman_server.util.CommunicationProtocol;
-import limmen.hangman_server.util.Guess;
-import limmen.hangman_server.util.Restart;
-import limmen.hangman_server.util.Start;
+import limmen.hangman_server.model.HangMan;
+import limmen.hangman.util.CommunicationProtocol;
+import limmen.hangman.util.Guess;
+import limmen.hangman.util.Restart;
+import limmen.hangman.util.Result;
+import limmen.hangman.util.Start;
 /**
  *
  * @author kim
@@ -25,6 +26,7 @@ public class ClientHandler implements Runnable {
     private ObjectOutputStream out = null;
     private final Socket clientSocket;
     private boolean running;
+    private HangMan game;
     
     /**
      *
@@ -43,23 +45,41 @@ public class ClientHandler implements Runnable {
         running = true;
         setup();
         
+        
         while(running){
-            CommunicationProtocol msg = read();
+            CommunicationProtocol msg = read();            
             if(msg != null){
-                
                 if(msg instanceof Guess){
-                    
+                    Result result = getResult((Guess) msg);
                 }
                 if(msg instanceof Restart){
-                    
+                    restart();
                 }
                 if(msg instanceof Start){
-                    
+                    startGame();
                 }
                 
             }
             
         }
+    }
+    
+    
+    private Result getResult(Guess guess){
+        return null;
+    }
+    private void restart(){
+        
+    } 
+    private void startGame(){
+        String word = getRandomWord();
+        this.game = new HangMan();
+        game.setWord(word);
+        Result res = new Result(game.getScore(), game.getAttemptsLeft(), game.getState(), "Welcome to the hangman game, I wish you goodluck!");
+        respond(res);
+    }
+    private String getRandomWord(){
+        return "PROGRAMMING";
     }
     
     void setup(){
@@ -104,7 +124,8 @@ public class ClientHandler implements Runnable {
      *
      * @param msg
      */
-    public void respond(Message msg){
+    public void respond(CommunicationProtocol msg){
+        System.out.println("Server responding");
         try {
             out.writeObject(msg);
             out.flush();
@@ -119,6 +140,7 @@ public class ClientHandler implements Runnable {
      *
      */
     public void cleanUp(){
+        System.out.println("Server cleaning up");
         try {
             out.close();
             in.close();
@@ -132,6 +154,7 @@ public class ClientHandler implements Runnable {
      *
      */
     public void terminate(){
+        System.out.println("Server terminating");
         this.running = false;
     }
     
