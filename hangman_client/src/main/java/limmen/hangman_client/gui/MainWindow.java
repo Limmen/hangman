@@ -131,6 +131,10 @@ public class MainWindow {
         gameFrame = new JFrame("HomeWork 1 ID2212 | HangMan");
         gameFrame.setLayout(new MigLayout());
         JPanel container = new JPanel(new MigLayout("wrap 3"));
+        scorePanel = new JPanel(new MigLayout("wrap 2"));
+        gamePanel = new JPanel(new MigLayout("wrap 1"));   
+        logPanel = new JPanel(new MigLayout("wrap 1"));
+        connectedPanel = new JPanel(new MigLayout("wrap 2"));
         createScorePanel();
         createGamePanel();
         createLogPanel();
@@ -143,8 +147,8 @@ public class MainWindow {
         
     }        
     private void createScorePanel(){
-        JLabel lbl;
-        scorePanel = new JPanel(new MigLayout("wrap 2"));
+        scorePanel.removeAll();
+        JLabel lbl;        
         lbl = new JLabel("Attempts left: ");
         lbl.setFont(PBold);        
         scorePanel.add(lbl, "span 1");
@@ -178,8 +182,8 @@ public class MainWindow {
         
     }
     private void createGamePanel(){
-        JLabel lbl;
-        gamePanel = new JPanel(new MigLayout("wrap 1"));        
+        gamePanel.removeAll();
+        JLabel lbl;            
         JPanel hangManPanel = new JPanel(new MigLayout("wrap 1"));
         System.out.println("Setting game getWord: " + game.getWord());
         lbl = new JLabel(game.getWord());
@@ -213,8 +217,8 @@ public class MainWindow {
         
     }
     private void createLogPanel(){
-        JLabel lbl;
-        logPanel = new JPanel(new MigLayout("wrap 1"));
+        logPanel.removeAll();
+        JLabel lbl;        
         lbl = new JLabel("Game log");
         lbl.setFont(Plain);
         logPanel.add(lbl, "span 1");
@@ -229,8 +233,8 @@ public class MainWindow {
       
     }   
     private void createConnectedPanel(){
-        JLabel lbl;
-        connectedPanel = new JPanel(new MigLayout("wrap 2"));
+        connectedPanel.removeAll();
+        JLabel lbl;        
         lbl = new JLabel("Connected to: ");
             lbl.setFont(Title);
             connectedPanel.add(lbl, "span 2, gapbottom 10, align center");
@@ -330,11 +334,12 @@ public class MainWindow {
     }
     
     public void updateGame(Result result){
+        System.out.println("Client received state of: " + result.getState());
         log.setText(log.getText() + result.getLog() + "\n");
         game.setScore(result.getScore());
         game.setAttempts(result.getAttemptsleft());
         System.out.println("state: " + result.getState());
-        game.setWord(result.getState());
+        game.setWord(game.spacify(result.getState()));
         createScorePanel();
         createGamePanel();
         gameFrame.pack();        
@@ -342,8 +347,15 @@ public class MainWindow {
     public void Congratulations(Congratulations con){
         
     }
-    public void GameOver(GameOver go){
-        
+    public void GameOver(GameOver go){        
+        log.setText(log.getText() + go.getLog() + "\n");
+        game.setScore(go.getScore());
+        game.setAttempts(go.getAttemptsleft());
+        System.out.println("state: " + go.getState());
+        game.setWord("<html><font color=red>" + game.spacify(go.getState()) + "</font></html>");
+        createScorePanel();
+        createGamePanel();
+        gameFrame.pack();     
     }            
     private void makeGuess(String guess){
         writeWorker = new WriteWorker(out, (CommunicationProtocol) new Guess(guess));

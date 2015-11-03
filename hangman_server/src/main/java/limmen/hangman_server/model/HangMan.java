@@ -20,29 +20,20 @@ public class HangMan {
     private int score;
     private String word;
     private String state;
+    public boolean gameover = false;
     
-    public HangMan(){
+    public HangMan(int score, String word){
         attemptsleft = 5;
-        score = 0;
+        this.score = score;
+        this.word  = word;
+        this.state = hide(word);    
     }
     public HangMan(int attempts, int score, String word){
         attemptsleft = attempts;
         this.score = score;
         this.word  = word;
         this.state = hide(word);        
-    }
-    
-    public void setWord(String word){
-        this.word = word;
-        this.state = hide(word);
-    }
-    public void setAttempts(int attempts){
-        this.attemptsleft = attempts;
-    }
-    public void setScore(int score){
-        this.score = score;
-    }
-    
+    }        
     public int getAttemptsLeft(){
         return this.attemptsleft;
     }    
@@ -56,9 +47,9 @@ public class HangMan {
         return state;
     }
     private String hide(String word){
-        return word.replaceAll(".*", "_");
+        return word.replaceAll(".", "_");
     }
-    private boolean guess(String guess){
+    public boolean guess(String guess){
         if(guess.equalsIgnoreCase(word)){
             state = word;
             score++;
@@ -71,7 +62,8 @@ public class HangMan {
                 char g = guess.charAt(0);
                 char[] wordArray = word.toCharArray();
                 char[] stateArray = state.toCharArray();
-                for(int i = 0; i < wordArray.length; i++){
+                System.out.println("word length: " + wordArray.length + " state length: " + stateArray.length);
+                for(int i = 0; i < wordArray.length-1; i++){
                     if(g == wordArray[i]){
                         stateArray[i] = g;
                         hit = true;
@@ -87,12 +79,16 @@ public class HangMan {
         }
     }
     
-    public CommunicationProtocol next(){
-        if(attemptsleft < 1)
-            return new GameOver();        
-        if(word.equals(state))
-            return new Congratulations();
+    public CommunicationProtocol next(String log){
+        if(attemptsleft < 1){
+            gameover = true;
+            return new GameOver(this.score, this.attemptsleft, word, "GAME OVER \nyour attempts is up. The correct word is:" + word);
+        }            
+        if(word.equals(state)){
+            gameover = true;
+            return new Congratulations(this.score, this.attemptsleft, word, "CONGRATULATIONS \n You guessed the corred word: " + word);
+        }
         else
-            return new Result(this.score, this.attemptsleft, this.state, "");
+            return new Result(this.score, this.attemptsleft, this.state, log);
     }
 }

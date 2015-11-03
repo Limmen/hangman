@@ -26,6 +26,9 @@ public class HangMan {
         this.word  = word;
         
     }
+    public String spacify(String word){
+        return word.replace("", " ").trim();
+    }
     public void setWord(String word){
         this.word = word;
     }

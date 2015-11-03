@@ -12,6 +12,8 @@ import java.io.OptionalDataException;
 import java.net.Socket;
 import limmen.hangman_server.model.HangMan;
 import limmen.hangman.util.CommunicationProtocol;
+import limmen.hangman.util.Congratulations;
+import limmen.hangman.util.GameOver;
 import limmen.hangman.util.Guess;
 import limmen.hangman.util.Restart;
 import limmen.hangman.util.Result;
@@ -27,6 +29,7 @@ public class ClientHandler implements Runnable {
     private final Socket clientSocket;
     private boolean running;
     private HangMan game;
+    private int score;
     
     /**
      *
@@ -35,6 +38,7 @@ public class ClientHandler implements Runnable {
      */
     public ClientHandler(Socket clientSocket){
         this.clientSocket = clientSocket;
+        this.score = 0;
     }
     
     /**
@@ -50,7 +54,7 @@ public class ClientHandler implements Runnable {
             CommunicationProtocol msg = read();            
             if(msg != null){
                 if(msg instanceof Guess){
-                    Result result = getResult((Guess) msg);
+                    respond(getResult((Guess) msg));
                 }
                 if(msg instanceof Restart){
                     restart();
@@ -65,16 +69,27 @@ public class ClientHandler implements Runnable {
     }
     
     
-    private Result getResult(Guess guess){
-        return null;
+    private CommunicationProtocol getResult(Guess guess){
+        if(game == null)
+            return null;
+        CommunicationProtocol result;
+        if(game.guess(guess.getGuess()))
+            result = game.next("You guessed: " + guess.getGuess() + " which was a hit");
+        else
+            result = game.next("You guessed: " + guess.getGuess() + " which was a miss");
+        if(result instanceof GameOver)
+            game = null;
+        if(result instanceof Congratulations)
+            game = null;
+        return result;
     }
     private void restart(){
         
     } 
     private void startGame(){
         String word = getRandomWord();
-        this.game = new HangMan();
-        game.setWord(word);
+        this.game = new HangMan(score, getRandomWord());
+        System.out.println("Sending state: " + game.getState());
         Result res = new Result(game.getScore(), game.getAttemptsLeft(), game.getState(), "Welcome to the hangman game, I wish you goodluck!");
         respond(res);
     }

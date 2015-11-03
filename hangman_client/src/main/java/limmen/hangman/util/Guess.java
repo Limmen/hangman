@@ -23,8 +23,8 @@ public class Guess implements CommunicationProtocol, Serializable {
         this.guess = guess;
     }
     
-    public void getGuess(String guess){
-        this.guess = guess;
+    public String getGuess(){
+        return guess;
     }
     
 }

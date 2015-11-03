@@ -5,10 +5,23 @@
  */
 package limmen.hangman.util;
 
+import java.io.Serializable;
+
 /**
  *
  * @author kim
  */
-public class Congratulations {
+public class Congratulations implements CommunicationProtocol, Serializable {
     
+    private int score;
+    private int attemptsleft;
+    private String state;
+    private String log;
+
+    public Congratulations(int score, int attemptsleft, String state, String log){
+        this.score = score;
+        this.attemptsleft = attemptsleft;
+        this.state = state;
+        this.log = log;
+    }
 }
