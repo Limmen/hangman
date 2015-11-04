@@ -308,7 +308,7 @@ public class MainWindow {
     
     
     private void connect(String host, int port){
-        connectWorker = new ConnectWorker(this, port, host);
+        //connectWorker = new ConnectWorker(this, port, host);
         connectWorker.execute();
     }
     
@@ -327,7 +327,7 @@ public class MainWindow {
                 showGameFrame();
             }
         });
-        readWorker = new ReadWorker(in, this);
+        //readWorker = new ReadWorker(in, this);
         readWorker.execute();
         writeWorker = new WriteWorker(out, (CommunicationProtocol) new Start());
         writeWorker.execute();

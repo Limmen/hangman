@@ -5,7 +5,8 @@
  */
 package limmen.hangman_client.startup;
 
-import limmen.hangman_client.gui.MainWindow;
+import javax.swing.SwingUtilities;
+import limmen.hangman_client.gui.ConnectFrame;
 
 /**
  *
@@ -14,7 +15,12 @@ import limmen.hangman_client.gui.MainWindow;
 public class Startup {
     
     public static void main(String[] args){
-        new MainWindow();
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new ConnectFrame();
+            }
+        });
     }
     
 }

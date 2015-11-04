@@ -10,6 +10,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import javax.swing.SwingWorker;
+import limmen.hangman_client.gui.GameFrame;
 
 /**
  *
@@ -48,7 +49,7 @@ public class DisconnectWorker extends SwingWorker <Boolean, Integer> {
             return false;
         }
         return true;
-    }
+    }          
 
     
 }

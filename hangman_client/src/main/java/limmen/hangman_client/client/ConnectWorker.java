@@ -5,13 +5,14 @@
  */
 package limmen.hangman_client.client;
 
+import static java.awt.SystemColor.window;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.rmi.UnknownHostException;
 import javax.swing.SwingWorker;
-import limmen.hangman_client.gui.MainWindow;
+import limmen.hangman_client.gui.ConnectPanel;
 
 /**
  *
@@ -22,7 +23,7 @@ public class ConnectWorker extends SwingWorker<Socket, Socket> {
     private final int port;
     private final String host;
     private Socket clientSocket;
-    private final MainWindow window;
+    private final ConnectPanel panel;
     private ObjectInputStream in;
     private ObjectOutputStream out = null; 
     
@@ -32,10 +33,10 @@ public class ConnectWorker extends SwingWorker<Socket, Socket> {
      * @param port
      * @param host
      */
-    public ConnectWorker(MainWindow window, int port, String host){
+    public ConnectWorker(ConnectPanel panel, int port, String host){
         this.port = port;
         this.host = host;
-        this.window = window;
+        this.panel = panel;
     }
 
     /**
@@ -73,6 +74,6 @@ public class ConnectWorker extends SwingWorker<Socket, Socket> {
     @Override
     protected void done()
     {
-        window.connected(this.host, this.port, this.clientSocket, this.in, this.out);        
+        panel.connected(this.host, this.port, this.clientSocket, this.in, this.out);        
     }        
 }

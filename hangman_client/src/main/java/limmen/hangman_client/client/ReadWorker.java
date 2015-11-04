@@ -5,16 +5,17 @@
 */
 package limmen.hangman_client.client;
 
+import static java.awt.SystemColor.window;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.OptionalDataException;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
-import limmen.hangman_client.gui.MainWindow;
 import limmen.hangman.util.CommunicationProtocol;
 import limmen.hangman.util.Congratulations;
 import limmen.hangman.util.GameOver;
 import limmen.hangman.util.Result;
+import limmen.hangman_client.gui.GameFrame;
 
 /**
  *
@@ -24,7 +25,7 @@ public class ReadWorker extends SwingWorker <Boolean, Integer> {
     
     private final ObjectInputStream in;
     private boolean running;
-    private final MainWindow window;
+    private final GameFrame frame;
     private CommunicationProtocol msg;
     
     /**
@@ -33,9 +34,9 @@ public class ReadWorker extends SwingWorker <Boolean, Integer> {
      * @param in
      * @param window
      */
-    public ReadWorker(ObjectInputStream in, MainWindow window){
+    public ReadWorker(ObjectInputStream in, GameFrame frame){
         this.in = in;
-        this.window = window;
+        this.frame = frame;
     }
     
     /**
@@ -53,7 +54,7 @@ public class ReadWorker extends SwingWorker <Boolean, Integer> {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            window.updateGame((Result) msg);
+                            frame.updateGame((Result) msg);
                         }
                     });
                 }
@@ -61,7 +62,7 @@ public class ReadWorker extends SwingWorker <Boolean, Integer> {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            window.Congratulations((Congratulations) msg);
+                            frame.Congratulations((Congratulations) msg);
                         }
                     });
                 }
@@ -69,7 +70,7 @@ public class ReadWorker extends SwingWorker <Boolean, Integer> {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            window.GameOver((GameOver) msg);
+                            frame.GameOver((GameOver) msg);
                         }
                     });
                 }
