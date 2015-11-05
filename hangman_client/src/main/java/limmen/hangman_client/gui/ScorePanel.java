@@ -8,9 +8,13 @@ package limmen.hangman_client.gui;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.ObjectOutputStream;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import limmen.hangman.util.Command;
+import limmen.hangman.util.Protocol;
+import limmen.hangman_client.client.WriteWorker;
 import net.miginfocom.swing.MigLayout;
 
 /**
@@ -25,8 +29,10 @@ public class ScorePanel extends JPanel {
     
     private JLabel attemptsLabel;
     private JLabel scoreLabel;
+    private ObjectOutputStream out;
     
-    public ScorePanel(int attempts, int score){
+    public ScorePanel(ObjectOutputStream out, int attempts, int score){
+        this.out = out;
         setLayout(new MigLayout("wrap 2"));
         JLabel lbl;        
         lbl = new JLabel("Attempts left: ");
@@ -49,7 +55,7 @@ public class ScorePanel extends JPanel {
             public void actionPerformed(ActionEvent arg0)
             {
                 try {
-                    //makeGuess();
+                    restart();
                 }
                 catch(Exception e)
                 {
@@ -58,10 +64,14 @@ public class ScorePanel extends JPanel {
                 
             }
         });        
-        add(restartButton, "span 2, gaptop 60");    
+        add(restartButton, "span 2");    
     }
     public void updateScore(int attempts, int score){
         attemptsLabel.setText(Integer.toString(attempts));
         scoreLabel.setText(Integer.toString(score));
+    }
+    
+    private void restart(){
+        new WriteWorker(out, (Protocol) new Protocol(Command.START)).execute();
     }
 }

@@ -20,7 +20,7 @@ public class ConnectFrame extends JFrame {
     public ConnectFrame(){
         this.setLayout(new MigLayout());
         this.setTitle("HomeWork 1 ID2212 | Connect");
-        this.setContentPane(new ConnectPanel());
+        this.setContentPane(new ConnectPanel(this));
         
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override

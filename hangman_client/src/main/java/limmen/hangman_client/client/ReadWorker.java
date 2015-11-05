@@ -11,10 +11,7 @@ import java.io.ObjectInputStream;
 import java.io.OptionalDataException;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
-import limmen.hangman.util.CommunicationProtocol;
-import limmen.hangman.util.Congratulations;
-import limmen.hangman.util.GameOver;
-import limmen.hangman.util.Result;
+import limmen.hangman.util.Protocol;
 import limmen.hangman_client.gui.GameFrame;
 
 /**
@@ -26,7 +23,7 @@ public class ReadWorker extends SwingWorker <Boolean, Integer> {
     private final ObjectInputStream in;
     private boolean running;
     private final GameFrame frame;
-    private CommunicationProtocol msg;
+    private Protocol msg;
     
     /**
      *
@@ -49,30 +46,32 @@ public class ReadWorker extends SwingWorker <Boolean, Integer> {
         running = true;
         while(running){
             msg = read();
-            if(msg != null){                                
-                if(msg instanceof Result){
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            frame.updateGame((Result) msg);
-                        }
-                    });
-                }
-                if(msg instanceof Congratulations){
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            frame.Congratulations((Congratulations) msg);
-                        }
-                    });
-                }
-                if(msg instanceof GameOver){
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            frame.GameOver((GameOver) msg);
-                        }
-                    });
+            if(msg != null){
+                switch (msg.getCommand()) {
+                    case RESULT:
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                frame.updateGame(msg);
+                            }
+                        });
+                        break;
+                    case CONGRATULATIONS:
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                frame.congratulations(msg);
+                            }
+                        });
+                        break;
+                    case GAMEOVER:
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                frame.gameOver(msg);
+                            }
+                        });
+                        break;
                 }
             }
         }
@@ -81,7 +80,7 @@ public class ReadWorker extends SwingWorker <Boolean, Integer> {
     }
     
     
-    private CommunicationProtocol read(){
+    private Protocol read(){
         Object input;
         try {
             input = in.readObject();
@@ -95,8 +94,8 @@ public class ReadWorker extends SwingWorker <Boolean, Integer> {
             running = false;
             return null;
         }
-        if (input instanceof CommunicationProtocol) {
-            return (CommunicationProtocol) input;
+        if (input instanceof Protocol) {
+            return (Protocol) input;
         }
         else{
             return null;

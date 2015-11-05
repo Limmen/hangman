@@ -8,6 +8,7 @@ package limmen.hangman_server.server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 /**
  *
@@ -18,12 +19,14 @@ public class Listener implements Runnable {
     private ServerSocket serverSocket;
     private int PORT = 9999;
     private boolean running;
+    private ArrayList<String> words;
     
     /**
      *
      * @param server
      */
-    public Listener(){
+    public Listener(ArrayList<String> words){
+        this.words = words;
     }
     
     /**
@@ -38,7 +41,7 @@ public class Listener implements Runnable {
             while (running)
             {
                 Socket clientSocket = serverSocket.accept();
-                new Thread(new ClientHandler(clientSocket)).start();
+                new Thread(new ClientHandler(clientSocket, words)).start();
             }            
         } catch (IOException e)
         {

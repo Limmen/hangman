@@ -29,10 +29,7 @@ public class ConnectedPanel extends JPanel {
     public ConnectedPanel(String hostname, int port, GameFrame frame){
         this.frame = frame;
         setLayout(new MigLayout("wrap 2"));
-        JLabel lbl;
-        lbl = new JLabel("Connected to: ");
-        lbl.setFont(Title);
-        add(lbl, "span 2, gapbottom 10, align center");
+        JLabel lbl;        
         lbl = new JLabel("Host: ");
         lbl.setFont(PBold);
         add(lbl, "span 1");

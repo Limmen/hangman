@@ -5,10 +5,9 @@
  */
 package limmen.hangman_server.model;
 
-import limmen.hangman.util.CommunicationProtocol;
-import limmen.hangman.util.Congratulations;
-import limmen.hangman.util.GameOver;
-import limmen.hangman.util.Result;
+import javax.xml.transform.Result;
+import limmen.hangman.util.Command;
+import limmen.hangman.util.Protocol;
 
 /**
  *
@@ -62,14 +61,11 @@ public class HangMan {
                 char g = guess.charAt(0);
                 char[] wordArray = word.toCharArray();
                 char[] stateArray = state.toCharArray();
-                System.out.println("word length: " + wordArray.length + " state length: " + stateArray.length);
-                for(int i = 0; i < wordArray.length-1; i++){
-                    if(g == wordArray[i]){
+                for(int i = 0; i < wordArray.length; i++){
+                    if(Character.toUpperCase(g) == Character.toUpperCase(wordArray[i])){
                         stateArray[i] = g;
                         hit = true;
                     }
-                    else
-                        stateArray[i] = '_';
                 }
                 this.state = new String(stateArray);                
             }
@@ -79,16 +75,16 @@ public class HangMan {
         }
     }
     
-    public CommunicationProtocol next(String log){
+    public Protocol next(String log){
         if(attemptsleft < 1){
             gameover = true;
-            return new GameOver(this.score, this.attemptsleft, word, "GAME OVER \nyour attempts is up. The correct word is:" + word);
+            return new Protocol(Command.GAMEOVER, this.score, this.attemptsleft, word, "GAME OVER \nyour attempts is up. The correct word is:" + word);
         }            
         if(word.equals(state)){
             gameover = true;
-            return new Congratulations(this.score, this.attemptsleft, word, "CONGRATULATIONS \n You guessed the corred word: " + word);
+            return new Protocol(Command.CONGRATULATIONS, this.score, this.attemptsleft, word, "CONGRATULATIONS \n You guessed the corred word: " + word);
         }
         else
-            return new Result(this.score, this.attemptsleft, this.state, log);
+            return new Protocol(Command.RESULT, this.score, this.attemptsleft, this.state, log);
     }
 }

@@ -5,6 +5,10 @@
  */
 package limmen.hangman_server.startup;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Scanner;
 import limmen.hangman_server.server.Listener;
 
 /**
@@ -13,13 +17,21 @@ import limmen.hangman_server.server.Listener;
  */
 public class Startup {
     
-    
+    private static final ArrayList<String> words = new ArrayList<String>();
     public Startup(){
         
     }
     
     public static void main(String[] args){
-        new Thread(new Listener()).start();
+        try {
+            Scanner s = new Scanner(new File("/usr/share/dict/words"));
+            while (s.hasNextLine())
+                words.add(s.nextLine());
+            System.out.format("Read %d words\n", words.size());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace(System.err);
+        }
+        new Thread(new Listener(words)).start();
     }
     
 }

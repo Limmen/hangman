@@ -7,6 +7,9 @@ package limmen.hangman_client.gui;
 
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -19,9 +22,6 @@ import net.miginfocom.swing.MigLayout;
  */
 public class LogPanel extends JPanel {
     private final Font Plain = new Font("Serif", Font.PLAIN, 12);
-    private final Font Title = new Font("Serif", Font.PLAIN, 14);
-    private final Font Word = new Font("Serif", Font.PLAIN, 25);
-    private final Font PBold = Plain.deriveFont(Plain.getStyle() | Font.BOLD);
     
     private JTextArea log;
     
@@ -37,8 +37,26 @@ public class LogPanel extends JPanel {
         log.setFont(Plain);
         JScrollPane logPane = new JScrollPane(log);
         logPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        logPane.setPreferredSize(new Dimension(150, 250));
+        logPane.setPreferredSize(new Dimension(400, 250));
         add(logPane, "span 1");
+        JButton clearButton = new JButton("Clear");
+        clearButton.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent arg0)
+            {
+                try {
+                    log.setText("");
+                }
+                catch(Exception e)
+                {
+                    
+                }
+                
+            }
+        });
+        clearButton.setFont(Plain);
+        add(clearButton, "span 1");
     }
     
     public void updateLog(String text){

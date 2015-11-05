@@ -13,8 +13,8 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import limmen.hangman.util.CommunicationProtocol;
-import limmen.hangman.util.Guess;
+import limmen.hangman.util.Command;
+import limmen.hangman.util.Protocol;
 import limmen.hangman_client.client.WriteWorker;
 import net.miginfocom.swing.MigLayout;
 
@@ -30,13 +30,13 @@ public class GamePanel extends JPanel {
     
     private ObjectOutputStream out;
     private JLabel wordLabel;
+    private JButton guessButton;
     
     public GamePanel(ObjectOutputStream out, String word){        
         this.out = out;
         setLayout(new MigLayout("wrap 1"));
         JLabel lbl;            
         JPanel hangManPanel = new JPanel(new MigLayout("wrap 1"));
-        System.out.println("Setting game getWord: " + word);
         wordLabel = new JLabel(word);
         wordLabel.setFont(Word);
         hangManPanel.add(wordLabel, "span 1, align center");
@@ -44,16 +44,18 @@ public class GamePanel extends JPanel {
         final JTextField guessField = new JTextField(20);
         guessField.setFont(Plain);
         guessPanel.add(guessField, "span 1");
-        JButton guessButton = new JButton("Guess");
+        guessButton = new JButton("Guess");
         guessButton.setFont(Title);
         guessButton.addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent arg0)
             {
-                try {                    
-                    makeGuess(guessField.getText());
-                    guessField.setText("");
+                try {  
+                    if(guessField.getText().length() > 0){
+                        makeGuess(guessField.getText());
+                        guessField.setText("");
+                    }
                 }
                 catch(Exception e)
                 {
@@ -62,15 +64,39 @@ public class GamePanel extends JPanel {
                 
             }
         });        
-        guessPanel.add(guessButton, "span 1");        
+        guessPanel.add(guessButton, "span 1");
+        JButton newWordButton = new JButton("New word");
+        newWordButton.setFont(Title);
+        newWordButton.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent arg0)
+            {
+                try {  
+                    newWord();
+                }
+                catch(Exception e)
+                {
+                    
+                }
+                
+            }
+        });        
+        guessPanel.add(newWordButton, "span 1");  
         add(hangManPanel, "span 1");
         add(guessPanel, "span 1, gaptop 60");
     }
     private void makeGuess(String guess){
-        new WriteWorker(out, (CommunicationProtocol) new Guess(guess)).execute();
+        new WriteWorker(out, (Protocol) new Protocol(Command.GUESS, guess)).execute();
+    }
+    private void newWord(){
+        new WriteWorker(out, (Protocol) new Protocol(Command.NEWWORD)).execute();
     }
     public void updateGame(String word){
         wordLabel.setText(word);
+    }
+    public void greyOut(){
+        guessButton.setEnabled(false); 
     }
     
     

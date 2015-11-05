@@ -11,15 +11,12 @@ import java.net.Socket;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import limmen.hangman.util.CommunicationProtocol;
-import limmen.hangman.util.Congratulations;
-import limmen.hangman.util.GameOver;
-import limmen.hangman.util.Result;
-import limmen.hangman.util.Start;
+import javax.xml.transform.Result;
+import limmen.hangman.util.Command;
+import limmen.hangman.util.Protocol;
 import limmen.hangman_client.client.DisconnectWorker;
 import limmen.hangman_client.client.ReadWorker;
 import limmen.hangman_client.client.WriteWorker;
-import limmen.hangman_client.client.model.HangMan;
 import net.miginfocom.swing.MigLayout;
 
 /**
@@ -40,45 +37,53 @@ public class GameFrame extends JFrame {
     private ObjectOutputStream out;
     private ReadWorker readWorker;
     private WriteWorker writeWorker;
-    private HangMan game;
+    private ConnectFrame frame;
     
-    public GameFrame(String host, int port, Socket clientSocket, ObjectInputStream in, ObjectOutputStream out){
+    public GameFrame(String host, int port, Socket clientSocket, ObjectInputStream in, ObjectOutputStream out, ConnectFrame frame){
         this.hostname = host;
         this.port = port;
         this.clientSocket = clientSocket;
         this.in = in;
         this.out = out;
-        this.game = new HangMan();
+        this.frame = frame;
         
         setup();        
     }
     private void setup(){                        
-        this.setLayout(new MigLayout());
-        this.setTitle("HomeWork 1 ID2212 | Connect");
+        setLayout(new MigLayout());
+        setTitle("HomeWork 1 ID2212 | Connect");
         createContainer();
-        this.setContentPane(container);
+        setContentPane(container);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent)
+            {
+                System.exit(0);
+            }
+        });
         pack();
         setLocationRelativeTo(null);    // centers on screen
         setVisible(true);
         
         readWorker = new ReadWorker(in, this);
         readWorker.execute();
-        writeWorker = new WriteWorker(out, (CommunicationProtocol) new Start());
+        writeWorker = new WriteWorker(out, (Protocol) new Protocol(Command.START));
         writeWorker.execute();
     }
     private void createContainer(){
-        container = new JPanel(new MigLayout("wrap 2"));
-        scorePanel = new ScorePanel(game.getAttemptsLeft(), game.getScore());
-        gamePanel = new GamePanel(out, game.getWord());
+        container = new JPanel(new MigLayout("wrap 3"));
+        scorePanel = new ScorePanel(out, 0, 0);
+        gamePanel = new GamePanel(out, "");
         connectedPanel = new ConnectedPanel(hostname, port, this);
         logPanel = new LogPanel();        
-        container.add(scorePanel, "span 1");
-        container.add(gamePanel, "span 1");
-        container.add(connectedPanel, "span 1, gaptop 70");
+        container.add(gamePanel, "span 3, align center, gaptop 50");
+        container.add(connectedPanel, "span 1, gapbottom 50");
+        container.add(scorePanel, "span 1, gapbottom 50");
         container.add(logPanel, "span 1, gaptop 70");
     }    
     public void disconnect(){       
             new DisconnectWorker(clientSocket, out, in).execute();
+            frame.setVisible(true);
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
@@ -87,27 +92,28 @@ public class GameFrame extends JFrame {
             });
     }
     
-    public void updateGame(Result result){
-        logPanel.updateLog(result.getLog());
-        game.setScore(result.getScore());
-        game.setAttempts(result.getAttemptsleft());
-        System.out.println("state: " + result.getState());
-        game.setWord(game.spacify(result.getState()));
-        scorePanel.updateScore(game.getAttemptsLeft(), game.getScore());
-        gamePanel.updateGame(game.getWord());
+    public void updateGame(Protocol msg){
+        logPanel.updateLog(msg.getLog());        
+        scorePanel.updateScore(msg.getAttemptsLeft(), msg.getScore());
+        gamePanel.updateGame(spacify(msg.getState()));
         pack();        
     }
-    public void Congratulations(Congratulations con){
-        
-    }
-    public void GameOver(GameOver go){        
-        logPanel.updateLog(go.getLog());
-        game.setScore(go.getScore());
-        game.setAttempts(go.getAttemptsleft());
-        System.out.println("state: " + go.getState());
-        game.setWord("<html><font color=red>" + game.spacify(go.getState()) + "</font></html>");
-        scorePanel.updateScore(game.getAttemptsLeft(), game.getScore());        
-        gamePanel.updateGame(game.getWord());
+    public void congratulations(Protocol msg){
+        logPanel.updateLog(msg.getLog());
+        scorePanel.updateScore(msg.getAttemptsLeft(), msg.getScore());        
+        gamePanel.updateGame("<html><font color=green>" + spacify(msg.getState()) + "</font></html>");
+        gamePanel.greyOut();
         pack();
-    }            
+    }
+    public void gameOver(Protocol msg){        
+        logPanel.updateLog(msg.getLog());
+        scorePanel.updateScore(msg.getAttemptsLeft(), msg.getScore());        
+        gamePanel.updateGame("<html><font color=red>" + spacify(msg.getState()) + "</font></html>");
+        gamePanel.greyOut();
+        pack();
+    }
+    
+    public String spacify(String word){
+        return word.replace("", " ").trim().toUpperCase();
+    }
 }

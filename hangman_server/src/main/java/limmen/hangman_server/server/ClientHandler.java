@@ -5,19 +5,19 @@
 */
 package limmen.hangman_server.server;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OptionalDataException;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.Scanner;
+import limmen.hangman.util.Command;
+import limmen.hangman.util.Protocol;
 import limmen.hangman_server.model.HangMan;
-import limmen.hangman.util.CommunicationProtocol;
-import limmen.hangman.util.Congratulations;
-import limmen.hangman.util.GameOver;
-import limmen.hangman.util.Guess;
-import limmen.hangman.util.Restart;
-import limmen.hangman.util.Result;
-import limmen.hangman.util.Start;
 /**
  *
  * @author kim
@@ -30,15 +30,19 @@ public class ClientHandler implements Runnable {
     private boolean running;
     private HangMan game;
     private int score;
+    private ArrayList<String> words;
+    private Random random;
     
     /**
      *
      * @param clientSocket
      * @param server
      */
-    public ClientHandler(Socket clientSocket){
+    public ClientHandler(Socket clientSocket, ArrayList<String> words){
         this.clientSocket = clientSocket;
+        this.words = words;
         this.score = 0;
+        this.random = new Random();        
     }
     
     /**
@@ -47,53 +51,70 @@ public class ClientHandler implements Runnable {
     @Override
     public void run() {
         running = true;
-        setup();
-        
-        
+        setup();                
         while(running){
-            CommunicationProtocol msg = read();            
+            Protocol msg = read();
             if(msg != null){
-                if(msg instanceof Guess){
-                    respond(getResult((Guess) msg));
-                }
-                if(msg instanceof Restart){
-                    restart();
-                }
-                if(msg instanceof Start){
+            switch (msg.getCommand()) {
+                case START:
                     startGame();
-                }
-                
+                    break;
+                case GUESS:
+                    respond(getResult(msg));
+                    break;
+                case RESTART:
+                    restart();
+                    break;
+                case NEWWORD:
+                    newWord();
+                    break;
+            }
             }
             
         }
     }
     
     
-    private CommunicationProtocol getResult(Guess guess){
+    private Protocol getResult(Protocol guess){
         if(game == null)
             return null;
-        CommunicationProtocol result;
+        Protocol result;
         if(game.guess(guess.getGuess()))
             result = game.next("You guessed: " + guess.getGuess() + " which was a hit");
         else
             result = game.next("You guessed: " + guess.getGuess() + " which was a miss");
-        if(result instanceof GameOver)
-            game = null;
-        if(result instanceof Congratulations)
-            game = null;
+        switch (result.getCommand()) {
+            case GAMEOVER:
+                game = null;
+                break;
+            case CONGRATULATIONS:
+                game = null;
+                break;
+        }
         return result;
     }
+    private void newWord(){
+        if(game.gameover){
+            score = game.getScore();
+            startGame();
+        }
+        else{
+            score--;
+            startGame();
+        }
+    }
     private void restart(){
-        
+        score = 0;
+        startGame();
     } 
     private void startGame(){
-        String word = getRandomWord();
-        this.game = new HangMan(score, getRandomWord());
-        System.out.println("Sending state: " + game.getState());
-        Result res = new Result(game.getScore(), game.getAttemptsLeft(), game.getState(), "Welcome to the hangman game, I wish you goodluck!");
-        respond(res);
+        game = new HangMan(score, getRandomWord());
+        Protocol msg = new Protocol(Command.RESULT, score, game.getAttemptsLeft(), game.getState(), "Welcome to the hangman game, I wish you goodluck!");
+        respond(msg);
     }
     private String getRandomWord(){
+        int i = random.nextInt(words.size());
+        System.out.println("Random word is: " + words.get(i));
         return "PROGRAMMING";
     }
     
@@ -109,7 +130,7 @@ public class ClientHandler implements Runnable {
         }
     }
     
-    CommunicationProtocol read(){
+    Protocol read(){
         Object msg;
         try {
             msg = in.readObject();
@@ -127,8 +148,8 @@ public class ClientHandler implements Runnable {
             return null;
         }
         
-        if (msg instanceof CommunicationProtocol) {
-            return (CommunicationProtocol) msg;
+        if (msg instanceof Protocol) {
+            return (Protocol) msg;
         }
         else{
             return null;
@@ -139,8 +160,7 @@ public class ClientHandler implements Runnable {
      *
      * @param msg
      */
-    public void respond(CommunicationProtocol msg){
-        System.out.println("Server responding");
+    public void respond(Protocol msg){
         try {
             out.writeObject(msg);
             out.flush();
@@ -155,7 +175,6 @@ public class ClientHandler implements Runnable {
      *
      */
     public void cleanUp(){
-        System.out.println("Server cleaning up");
         try {
             out.close();
             in.close();
@@ -169,7 +188,6 @@ public class ClientHandler implements Runnable {
      *
      */
     public void terminate(){
-        System.out.println("Server terminating");
         this.running = false;
     }
     

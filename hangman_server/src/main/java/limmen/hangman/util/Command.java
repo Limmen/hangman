@@ -5,17 +5,16 @@
  */
 package limmen.hangman.util;
 
-import java.io.Serializable;
-
 /**
  *
  * @author kim
  */
-public class Start implements CommunicationProtocol, Serializable {
-    
-    
-    public Start(){
-        
-    }
-    
+public enum Command {
+    START,
+    GUESS,
+    RESTART,
+    RESULT,
+    CONGRATULATIONS,
+    GAMEOVER,
+    NEWWORD;    
 }
