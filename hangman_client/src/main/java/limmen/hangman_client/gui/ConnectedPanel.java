@@ -26,6 +26,12 @@ public class ConnectedPanel extends JPanel {
     
     private GameFrame frame;
     
+    /**
+     *
+     * @param hostname
+     * @param port
+     * @param frame
+     */
     public ConnectedPanel(String hostname, int port, GameFrame frame){
         this.frame = frame;
         setLayout(new MigLayout("wrap 2"));

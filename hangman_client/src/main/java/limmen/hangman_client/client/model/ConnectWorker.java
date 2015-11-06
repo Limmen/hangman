@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package limmen.hangman_client.client;
+package limmen.hangman_client.client.model;
 
 import static java.awt.SystemColor.window;
 import java.io.IOException;
@@ -29,7 +29,7 @@ public class ConnectWorker extends SwingWorker<Socket, Socket> {
     
     /**
      *
-     * @param window
+     * @param panel
      * @param port
      * @param host
      */

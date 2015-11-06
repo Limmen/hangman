@@ -18,10 +18,18 @@ import limmen.hangman_server.server.Listener;
 public class Startup {
     
     private static final ArrayList<String> words = new ArrayList<String>();
+
+    /**
+     *
+     */
     public Startup(){
         
     }
     
+    /**
+     *
+     * @param args
+     */
     public static void main(String[] args){
         try {
             Scanner s = new Scanner(new File("/usr/share/dict/words"));

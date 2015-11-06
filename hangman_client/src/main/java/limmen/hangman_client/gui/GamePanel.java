@@ -15,7 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import limmen.hangman.util.Command;
 import limmen.hangman.util.Protocol;
-import limmen.hangman_client.client.WriteWorker;
+import limmen.hangman_client.client.model.WriteWorker;
 import net.miginfocom.swing.MigLayout;
 
 /**
@@ -32,6 +32,11 @@ public class GamePanel extends JPanel {
     private JLabel wordLabel;
     private JButton guessButton;
     
+    /**
+     *
+     * @param out
+     * @param word
+     */
     public GamePanel(ObjectOutputStream out, String word){        
         this.out = out;
         setLayout(new MigLayout("wrap 1"));
@@ -92,9 +97,18 @@ public class GamePanel extends JPanel {
     private void newWord(){
         new WriteWorker(out, (Protocol) new Protocol(Command.NEWWORD)).execute();
     }
+
+    /**
+     *
+     * @param word
+     */
     public void updateGame(String word){
         wordLabel.setText(word);
     }
+
+    /**
+     *
+     */
     public void greyOut(){
         guessButton.setEnabled(false); 
     }

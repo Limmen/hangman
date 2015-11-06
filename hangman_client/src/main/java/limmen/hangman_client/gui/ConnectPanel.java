@@ -16,7 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-import limmen.hangman_client.client.ConnectWorker;
+import limmen.hangman_client.client.model.ConnectWorker;
 import net.miginfocom.swing.MigLayout;
 
 /**
@@ -35,6 +35,10 @@ public class ConnectPanel extends JPanel {
     private ConnectWorker connectWorker;
     private ConnectFrame frame;
     
+    /**
+     *
+     * @param frame
+     */
     public ConnectPanel(ConnectFrame frame){
         this.frame = frame;
         setLayout(new MigLayout("wrap 2"));
@@ -76,6 +80,14 @@ public class ConnectPanel extends JPanel {
         connectWorker.execute();
     }
     
+    /**
+     *
+     * @param host
+     * @param port
+     * @param clientSocket
+     * @param in
+     * @param out
+     */
     public void connected(final String host, final int port, final Socket clientSocket, final ObjectInputStream in, final ObjectOutputStream out){        
         frame.setVisible(false);
         hostField.setText("");

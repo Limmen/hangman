@@ -14,6 +14,10 @@ import limmen.hangman_client.gui.ConnectFrame;
  */
 public class Startup {
     
+    /**
+     *
+     * @param args
+     */
     public static void main(String[] args){
         SwingUtilities.invokeLater(new Runnable() {
             @Override

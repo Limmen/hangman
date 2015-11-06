@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package limmen.hangman_client.client;
+package limmen.hangman_client.client.model;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -21,7 +21,7 @@ public class WriteWorker extends SwingWorker <Boolean, Integer> {
     
     /**
      *
-     * @param message
+     * @param msg
      * @param out
      */
     public WriteWorker(ObjectOutputStream out, Protocol msg){

@@ -10,11 +10,39 @@ package limmen.hangman.util;
  * @author kim
  */
 public enum Command {
+
+    /**
+     *
+     */
     START,
+
+    /**
+     *
+     */
     GUESS,
+
+    /**
+     *
+     */
     RESTART,
+
+    /**
+     *
+     */
     RESULT,
+
+    /**
+     *
+     */
     CONGRATULATIONS,
+
+    /**
+     *
+     */
     GAMEOVER,
+
+    /**
+     *
+     */
     NEWWORD;    
 }

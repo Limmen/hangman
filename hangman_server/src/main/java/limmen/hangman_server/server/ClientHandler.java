@@ -5,8 +5,6 @@
 */
 package limmen.hangman_server.server;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -14,7 +12,7 @@ import java.io.OptionalDataException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.Scanner;
+import limmen.hangman.util.BadProtocolException;
 import limmen.hangman.util.Command;
 import limmen.hangman.util.Protocol;
 import limmen.hangman_server.model.HangMan;
@@ -36,7 +34,7 @@ public class ClientHandler implements Runnable {
     /**
      *
      * @param clientSocket
-     * @param server
+     * @param words
      */
     public ClientHandler(Socket clientSocket, ArrayList<String> words){
         this.clientSocket = clientSocket;
@@ -51,24 +49,29 @@ public class ClientHandler implements Runnable {
     @Override
     public void run() {
         running = true;
-        setup();                
+        setup();
         while(running){
-            Protocol msg = read();
-            if(msg != null){
-            switch (msg.getCommand()) {
-                case START:
-                    startGame();
-                    break;
-                case GUESS:
-                    respond(getResult(msg));
-                    break;
-                case RESTART:
-                    restart();
-                    break;
-                case NEWWORD:
-                    newWord();
-                    break;
+            try{
+                Protocol msg = read();
+                if(msg != null){
+                    switch (msg.getCommand()) {
+                        case START:
+                            startGame();
+                            break;
+                        case GUESS:
+                            respond(getResult(msg));
+                            break;
+                        case RESTART:
+                            restart();
+                            break;
+                        case NEWWORD:
+                            newWord();
+                            break;
+                    }
+                }
             }
+            catch(BadProtocolException e){
+                terminate();
             }
             
         }
@@ -130,7 +133,7 @@ public class ClientHandler implements Runnable {
         }
     }
     
-    Protocol read(){
+    Protocol read() throws BadProtocolException{
         Object msg;
         try {
             msg = in.readObject();
@@ -152,7 +155,7 @@ public class ClientHandler implements Runnable {
             return (Protocol) msg;
         }
         else{
-            return null;
+            throw new BadProtocolException();
         }
     }
     

@@ -3,14 +3,14 @@
 * To change this template file, choose Tools | Templates
 * and open the template in the editor.
 */
-package limmen.hangman_client.client;
+package limmen.hangman_client.client.model;
 
-import static java.awt.SystemColor.window;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.OptionalDataException;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
+import limmen.hangman.util.BadProtocolException;
 import limmen.hangman.util.Protocol;
 import limmen.hangman_client.gui.GameFrame;
 
@@ -27,9 +27,8 @@ public class ReadWorker extends SwingWorker <Boolean, Integer> {
     
     /**
      *
-     * @param area
      * @param in
-     * @param window
+     * @param frame
      */
     public ReadWorker(ObjectInputStream in, GameFrame frame){
         this.in = in;
@@ -45,34 +44,39 @@ public class ReadWorker extends SwingWorker <Boolean, Integer> {
     protected Boolean doInBackground() throws Exception {
         running = true;
         while(running){
-            msg = read();
-            if(msg != null){
-                switch (msg.getCommand()) {
-                    case RESULT:
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                frame.updateGame(msg);
-                            }
-                        });
-                        break;
-                    case CONGRATULATIONS:
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                frame.congratulations(msg);
-                            }
-                        });
-                        break;
-                    case GAMEOVER:
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                frame.gameOver(msg);
-                            }
-                        });
-                        break;
+            try{
+                msg = read();
+                if(msg != null){
+                    switch (msg.getCommand()) {
+                        case RESULT:
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    frame.updateGame(msg);
+                                }
+                            });
+                            break;
+                        case CONGRATULATIONS:
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    frame.congratulations(msg);
+                                }
+                            });
+                            break;
+                        case GAMEOVER:
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    frame.gameOver(msg);
+                                }
+                            });
+                            break;
+                    }
                 }
+            }
+            catch(BadProtocolException e){
+                
             }
         }
         
@@ -80,7 +84,7 @@ public class ReadWorker extends SwingWorker <Boolean, Integer> {
     }
     
     
-    private Protocol read(){
+    private Protocol read() throws BadProtocolException{
         Object input;
         try {
             input = in.readObject();
@@ -98,7 +102,7 @@ public class ReadWorker extends SwingWorker <Boolean, Integer> {
             return (Protocol) input;
         }
         else{
-            return null;
+            throw new BadProtocolException();
         }
     }
     

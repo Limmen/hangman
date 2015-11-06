@@ -17,6 +17,9 @@ public class ConnectFrame extends JFrame {
     
     private JPanel container;
             
+    /**
+     *
+     */
     public ConnectFrame(){
         this.setLayout(new MigLayout());
         this.setTitle("HomeWork 1 ID2212 | Connect");

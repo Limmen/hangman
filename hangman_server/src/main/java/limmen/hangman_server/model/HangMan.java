@@ -5,7 +5,6 @@
  */
 package limmen.hangman_server.model;
 
-import javax.xml.transform.Result;
 import limmen.hangman.util.Command;
 import limmen.hangman.util.Protocol;
 
@@ -19,35 +18,77 @@ public class HangMan {
     private int score;
     private String word;
     private String state;
+
+    /**
+     *
+     */
     public boolean gameover = false;
     
+    /**
+     *
+     * @param score
+     * @param word
+     */
     public HangMan(int score, String word){
         attemptsleft = 5;
         this.score = score;
         this.word  = word;
         this.state = hide(word);    
     }
+
+    /**
+     *
+     * @param attempts
+     * @param score
+     * @param word
+     */
     public HangMan(int attempts, int score, String word){
         attemptsleft = attempts;
         this.score = score;
         this.word  = word;
         this.state = hide(word);        
     }        
+
+    /**
+     *
+     * @return
+     */
     public int getAttemptsLeft(){
         return this.attemptsleft;
     }    
+
+    /**
+     *
+     * @return
+     */
     public int getScore(){
         return this.score;
     }
+
+    /**
+     *
+     * @return
+     */
     public String getWord(){
         return word;
     }
+
+    /**
+     *
+     * @return
+     */
     public String getState(){
         return state;
     }
     private String hide(String word){
         return word.replaceAll(".", "_");
     }
+
+    /**
+     *
+     * @param guess
+     * @return
+     */
     public boolean guess(String guess){
         if(guess.equalsIgnoreCase(word)){
             state = word;
@@ -75,6 +116,11 @@ public class HangMan {
         }
     }
     
+    /**
+     *
+     * @param log
+     * @return
+     */
     public Protocol next(String log){
         if(attemptsleft < 1){
             gameover = true;

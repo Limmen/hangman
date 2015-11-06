@@ -19,7 +19,7 @@ public class Listener implements Runnable {
     private ServerSocket serverSocket;
     private int PORT = 9999;
     private boolean running;
-    private ArrayList<String> words;
+    private final ArrayList<String> words;
     
     /**
      *

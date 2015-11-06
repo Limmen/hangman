@@ -14,9 +14,9 @@ import javax.swing.SwingUtilities;
 import javax.xml.transform.Result;
 import limmen.hangman.util.Command;
 import limmen.hangman.util.Protocol;
-import limmen.hangman_client.client.DisconnectWorker;
-import limmen.hangman_client.client.ReadWorker;
-import limmen.hangman_client.client.WriteWorker;
+import limmen.hangman_client.client.model.DisconnectWorker;
+import limmen.hangman_client.client.model.ReadWorker;
+import limmen.hangman_client.client.model.WriteWorker;
 import net.miginfocom.swing.MigLayout;
 
 /**
@@ -39,6 +39,15 @@ public class GameFrame extends JFrame {
     private WriteWorker writeWorker;
     private ConnectFrame frame;
     
+    /**
+     *
+     * @param host
+     * @param port
+     * @param clientSocket
+     * @param in
+     * @param out
+     * @param frame
+     */
     public GameFrame(String host, int port, Socket clientSocket, ObjectInputStream in, ObjectOutputStream out, ConnectFrame frame){
         this.hostname = host;
         this.port = port;
@@ -81,6 +90,10 @@ public class GameFrame extends JFrame {
         container.add(scorePanel, "span 1, gapbottom 50");
         container.add(logPanel, "span 1, gaptop 70");
     }    
+
+    /**
+     *
+     */
     public void disconnect(){       
             new DisconnectWorker(clientSocket, out, in).execute();
             frame.setVisible(true);
@@ -92,12 +105,21 @@ public class GameFrame extends JFrame {
             });
     }
     
+    /**
+     *
+     * @param msg
+     */
     public void updateGame(Protocol msg){
         logPanel.updateLog(msg.getLog());        
         scorePanel.updateScore(msg.getAttemptsLeft(), msg.getScore());
         gamePanel.updateGame(spacify(msg.getState()));
         pack();        
     }
+
+    /**
+     *
+     * @param msg
+     */
     public void congratulations(Protocol msg){
         logPanel.updateLog(msg.getLog());
         scorePanel.updateScore(msg.getAttemptsLeft(), msg.getScore());        
@@ -105,6 +127,11 @@ public class GameFrame extends JFrame {
         gamePanel.greyOut();
         pack();
     }
+
+    /**
+     *
+     * @param msg
+     */
     public void gameOver(Protocol msg){        
         logPanel.updateLog(msg.getLog());
         scorePanel.updateScore(msg.getAttemptsLeft(), msg.getScore());        
@@ -113,6 +140,11 @@ public class GameFrame extends JFrame {
         pack();
     }
     
+    /**
+     *
+     * @param word
+     * @return
+     */
     public String spacify(String word){
         return word.replace("", " ").trim().toUpperCase();
     }

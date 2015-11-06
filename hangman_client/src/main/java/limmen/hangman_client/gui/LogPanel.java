@@ -25,6 +25,9 @@ public class LogPanel extends JPanel {
     
     private JTextArea log;
     
+    /**
+     *
+     */
     public LogPanel(){
         setLayout(new MigLayout("wrap 1"));
         JLabel lbl;        
@@ -59,6 +62,10 @@ public class LogPanel extends JPanel {
         add(clearButton, "span 1");
     }
     
+    /**
+     *
+     * @param text
+     */
     public void updateLog(String text){
         log.setText(log.getText() + text + "\n");
     }
