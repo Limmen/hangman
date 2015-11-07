@@ -18,7 +18,7 @@ import limmen.hangman_client.client.model.WriteWorker;
 import net.miginfocom.swing.MigLayout;
 
 /**
- *
+ * JPanel containing the current score and a button to restart.
  * @author kim
  */
 public class ScorePanel extends JPanel {
@@ -27,15 +27,15 @@ public class ScorePanel extends JPanel {
     private final Font Word = new Font("Serif", Font.PLAIN, 25);
     private final Font PBold = Plain.deriveFont(Plain.getStyle() | Font.BOLD);
     
-    private JLabel attemptsLabel;
-    private JLabel scoreLabel;
-    private ObjectOutputStream out;
+    private final JLabel attemptsLabel;
+    private final JLabel scoreLabel;
+    private final ObjectOutputStream out;
     
     /**
-     *
-     * @param out
-     * @param attempts
-     * @param score
+     * Class constructor
+     * @param out ObjectOutputStream to the server
+     * @param attempts number of attempts left for the user
+     * @param score current score between the user and server
      */
     public ScorePanel(ObjectOutputStream out, int attempts, int score){
         this.out = out;
@@ -74,16 +74,18 @@ public class ScorePanel extends JPanel {
     }
 
     /**
-     *
-     * @param attempts
-     * @param score
+     * Update the current score
+     * @param attempts number of attempts left for user
+     * @param score current score between user and server
      */
     public void updateScore(int attempts, int score){
         attemptsLabel.setText(Integer.toString(attempts));
         scoreLabel.setText(Integer.toString(score));
     }
-    
+    /*
+    * Sends restart-request to the server
+    */
     private void restart(){
-        new WriteWorker(out, (Protocol) new Protocol(Command.START)).execute();
+        new WriteWorker(out, (Protocol) new Protocol(Command.RESTART)).execute();
     }
 }

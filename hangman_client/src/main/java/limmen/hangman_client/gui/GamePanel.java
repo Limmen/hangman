@@ -19,28 +19,24 @@ import limmen.hangman_client.client.model.WriteWorker;
 import net.miginfocom.swing.MigLayout;
 
 /**
- *
+ * JPanel representing a HangMan-word and buttons to guess letters/word
  * @author kim
  */
 public class GamePanel extends JPanel {
     private final Font Plain = new Font("Serif", Font.PLAIN, 12);
     private final Font Title = new Font("Serif", Font.PLAIN, 14);
-    private final Font Word = new Font("Serif", Font.PLAIN, 25);
-    private final Font PBold = Plain.deriveFont(Plain.getStyle() | Font.BOLD);
-    
-    private ObjectOutputStream out;
-    private JLabel wordLabel;
-    private JButton guessButton;
-    
+    private final Font Word = new Font("Serif", Font.PLAIN, 25);    
+    private final ObjectOutputStream out;
+    private final JLabel wordLabel;
+    private final JButton guessButton;    
     /**
-     *
-     * @param out
-     * @param word
+     * Class constructor
+     * @param out ObjectOutputStream to server
+     * @param word Current view of the word for the user
      */
     public GamePanel(ObjectOutputStream out, String word){        
         this.out = out;
-        setLayout(new MigLayout("wrap 1"));
-        JLabel lbl;            
+        setLayout(new MigLayout("wrap 1"));          
         JPanel hangManPanel = new JPanel(new MigLayout("wrap 1"));
         wordLabel = new JLabel(word);
         wordLabel.setFont(Word);
@@ -91,26 +87,39 @@ public class GamePanel extends JPanel {
         add(hangManPanel, "span 1");
         add(guessPanel, "span 1, gaptop 60");
     }
+    /*
+    * Send guess to server
+    */
     private void makeGuess(String guess){
         new WriteWorker(out, (Protocol) new Protocol(Command.GUESS, guess)).execute();
     }
+    /*
+    * Send request for a new word to server
+    */
     private void newWord(){
         new WriteWorker(out, (Protocol) new Protocol(Command.NEWWORD)).execute();
     }
 
     /**
-     *
-     * @param word
+     * Update UI with new word
+     * @param word word to update the UI with
      */
     public void updateGame(String word){
         wordLabel.setText(word);
     }
 
     /**
-     *
+     * GreyOut the guess-button
      */
     public void greyOut(){
         guessButton.setEnabled(false); 
+    }
+    
+    /**
+     * Enable the guess-button
+     */
+    public void enableGuess(){
+        guessButton.setEnabled(true); 
     }
     
     

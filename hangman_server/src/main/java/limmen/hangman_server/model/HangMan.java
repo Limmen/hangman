@@ -9,23 +9,20 @@ import limmen.hangman.util.Command;
 import limmen.hangman.util.Protocol;
 
 /**
- *
+ * Class that contains game-info and logic for a HangMan game.
  * @author kim
  */
 public class HangMan {
     
     private int attemptsleft;
     private int score;
-    private String word;
+    private final String word;
     private String state;
-
-    /**
-     *
-     */
-    public boolean gameover = false;
+    private boolean gameover = false;
+    private boolean win = false;
     
     /**
-     *
+     * Class constructor.
      * @param score
      * @param word
      */
@@ -37,10 +34,10 @@ public class HangMan {
     }
 
     /**
-     *
-     * @param attempts
-     * @param score
-     * @param word
+     * Class constructor with specified number of attempts (default is 5)
+     * @param attempts number of attempts
+     * @param score current score between user and server
+     * @param word word that the user is to guess
      */
     public HangMan(int attempts, int score, String word){
         attemptsleft = attempts;
@@ -50,50 +47,65 @@ public class HangMan {
     }        
 
     /**
-     *
-     * @return
+     * Getter for attempts
+     * @return attemptsleft the number of attemptsleft for the user to guess
      */
     public int getAttemptsLeft(){
-        return this.attemptsleft;
+        return attemptsleft;
     }    
 
     /**
-     *
-     * @return
+     * Getter for score
+     * @return score the score between the client and server
      */
     public int getScore(){
-        return this.score;
+        return score;
     }
 
     /**
-     *
-     * @return
+     * Getter for word
+     * @return word the word that the player is to guess
      */
     public String getWord(){
         return word;
     }
+    /**
+     * Getter for gameover
+     * @return gameover boolean that tells wether the game is over or not
+     */
+    public boolean getGameOver(){
+        return gameover;
+    }
+    /**
+     * Getter for win
+     * @return win boolean that tells wether user have won or not
+     */
+    public boolean getWin(){
+        return win;
+    }
 
     /**
-     *
-     * @return
+     * Getter for state
+     * @return state the users view of the word
      */
     public String getState(){
         return state;
     }
+    /*
+    * Creates the default-state (hides the real word).
+    */
     private String hide(String word){
         return word.replaceAll(".", "_");
     }
 
     /**
-     *
-     * @param guess
-     * @return
+     * Guess a letter or whole word
+     * @param guess string to guess
+     * @return boolean wether the guess was successful or not
      */
     public boolean guess(String guess){
         if(guess.equalsIgnoreCase(word)){
-            state = word;
-            score++;
-            
+            state = word;            
             return true;
         }
         else{
@@ -117,17 +129,20 @@ public class HangMan {
     }
     
     /**
-     *
-     * @param log
-     * @return
+     * Determines the next action (wether we should finish up the game 
+     * and send congratulations/gameover or continue).
+     * @param log the log to send to client if the game is not over
+     * @return Protocol to send to client
      */
     public Protocol next(String log){
         if(attemptsleft < 1){
             gameover = true;
+            score--;
             return new Protocol(Command.GAMEOVER, this.score, this.attemptsleft, word, "GAME OVER \nyour attempts is up. The correct word is:" + word);
-        }            
-        if(word.equals(state)){
-            gameover = true;
+        }
+        if(word.equalsIgnoreCase(state)){
+            score++;
+            win = true;
             return new Protocol(Command.CONGRATULATIONS, this.score, this.attemptsleft, word, "CONGRATULATIONS \n You guessed the corred word: " + word);
         }
         else

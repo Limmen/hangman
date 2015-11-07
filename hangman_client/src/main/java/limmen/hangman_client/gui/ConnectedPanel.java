@@ -9,28 +9,26 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
 
 /**
- *
+ * JPanel that contains information om a current socket-connection.
  * @author kim
  */
 public class ConnectedPanel extends JPanel {
     private final Font Plain = new Font("Serif", Font.PLAIN, 12);
     private final Font Title = new Font("Serif", Font.PLAIN, 14);
-    private final Font Word = new Font("Serif", Font.PLAIN, 25);
     private final Font PBold = Plain.deriveFont(Plain.getStyle() | Font.BOLD);
     
-    private GameFrame frame;
+    private final GameFrame frame;
     
     /**
-     *
-     * @param hostname
-     * @param port
-     * @param frame
+     * Class constructor.
+     * @param hostname hostname
+     * @param port portnumber
+     * @param frame Frame for sending UI-updates if user disconnects.
      */
     public ConnectedPanel(String hostname, int port, GameFrame frame){
         this.frame = frame;

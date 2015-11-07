@@ -15,7 +15,8 @@ import limmen.hangman.util.Protocol;
 import limmen.hangman_client.gui.GameFrame;
 
 /**
- *
+ * Worker thread to read messages from socket and add events to EDT
+ * when neccessary.
  * @author kim
  */
 public class ReadWorker extends SwingWorker <Boolean, Integer> {
@@ -26,9 +27,10 @@ public class ReadWorker extends SwingWorker <Boolean, Integer> {
     private Protocol msg;
     
     /**
-     *
-     * @param in
-     * @param frame
+     * Class constructor.
+     * Frame is neccessary for updating the UI later.
+     * @param in ObjectInputStream to the socket connection
+     * @param frame JFrame for adding UI-updated to EDT when neccessary
      */
     public ReadWorker(ObjectInputStream in, GameFrame frame){
         this.in = in;
@@ -36,8 +38,8 @@ public class ReadWorker extends SwingWorker <Boolean, Integer> {
     }
     
     /**
-     *
-     * @return
+     * Loop-read a inputstream and add events to EDT when neccessary
+     * @return boolean 
      * @throws Exception
      */
     @Override
@@ -76,14 +78,16 @@ public class ReadWorker extends SwingWorker <Boolean, Integer> {
                 }
             }
             catch(BadProtocolException e){
-                
+                return false;
             }
         }
         
         return false;
     }
     
-    
+    /*
+    * Reads ObjectInputStream from server.
+    */
     private Protocol read() throws BadProtocolException{
         Object input;
         try {

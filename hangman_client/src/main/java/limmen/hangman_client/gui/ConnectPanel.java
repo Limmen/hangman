@@ -20,24 +20,23 @@ import limmen.hangman_client.client.model.ConnectWorker;
 import net.miginfocom.swing.MigLayout;
 
 /**
- *
+ * JPanel that contains a form for connecting to a server.
  * @author kim
  */
 public class ConnectPanel extends JPanel {
     
     private final Font Plain = new Font("Serif", Font.PLAIN, 12);
     private final Font Title = new Font("Serif", Font.PLAIN, 14);
-    private final Font Word = new Font("Serif", Font.PLAIN, 25);
     private final Font PBold = Plain.deriveFont(Plain.getStyle() | Font.BOLD);
     
     private JTextField hostField;
     private JTextField portField;
     private ConnectWorker connectWorker;
-    private ConnectFrame frame;
+    private final ConnectFrame frame;
     
     /**
-     *
-     * @param frame
+     * Class constructor
+     * @param frame JFrame for communication to the connect-frame that a connection was established
      */
     public ConnectPanel(ConnectFrame frame){
         this.frame = frame;
@@ -81,21 +80,22 @@ public class ConnectPanel extends JPanel {
     }
     
     /**
-     *
-     * @param host
-     * @param port
-     * @param clientSocket
-     * @param in
-     * @param out
+     * This method is called by the connectWorker
+     * when a connection was established.
+     * @param host hostname
+     * @param port portnumber
+     * @param serverSocket socket connection to server
+     * @param in ObjectInputStream to server
+     * @param out ObjectOutputStream to server
      */
-    public void connected(final String host, final int port, final Socket clientSocket, final ObjectInputStream in, final ObjectOutputStream out){        
+    public void connected(final String host, final int port, final Socket serverSocket, final ObjectInputStream in, final ObjectOutputStream out){        
         frame.setVisible(false);
         hostField.setText("");
         portField.setText("");
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new GameFrame(host, port, clientSocket, in, out, frame);
+                new GameFrame(host, port, serverSocket, in, out, frame);
             }
         });        
     }

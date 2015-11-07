@@ -17,12 +17,11 @@ import javax.swing.JTextArea;
 import net.miginfocom.swing.MigLayout;
 
 /**
- *
+ * JPanel that contains a gamelog for Hangman game.
  * @author kim
  */
 public class LogPanel extends JPanel {
-    private final Font Plain = new Font("Serif", Font.PLAIN, 12);
-    
+    private final Font Plain = new Font("Serif", Font.PLAIN, 12);    
     private JTextArea log;
     
     /**
@@ -63,8 +62,8 @@ public class LogPanel extends JPanel {
     }
     
     /**
-     *
-     * @param text
+     * Updates the log
+     * @param text text to add to the log
      */
     public void updateLog(String text){
         log.setText(log.getText() + text + "\n");

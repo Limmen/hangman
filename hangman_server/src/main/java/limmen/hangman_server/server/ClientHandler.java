@@ -17,7 +17,7 @@ import limmen.hangman.util.Command;
 import limmen.hangman.util.Protocol;
 import limmen.hangman_server.model.HangMan;
 /**
- *
+ * Class that handles a clientconnection.
  * @author kim
  */
 public class ClientHandler implements Runnable {
@@ -28,13 +28,13 @@ public class ClientHandler implements Runnable {
     private boolean running;
     private HangMan game;
     private int score;
-    private ArrayList<String> words;
-    private Random random;
+    private final ArrayList<String> words;
+    private final Random random;
     
     /**
-     *
-     * @param clientSocket
-     * @param words
+     * Class constructor
+     * @param clientSocket socket connection
+     * @param words list of words to use in the hangman game
      */
     public ClientHandler(Socket clientSocket, ArrayList<String> words){
         this.clientSocket = clientSocket;
@@ -44,7 +44,7 @@ public class ClientHandler implements Runnable {
     }
     
     /**
-     *
+     * Readmessages from client and respond.
      */
     @Override
     public void run() {
@@ -76,8 +76,9 @@ public class ClientHandler implements Runnable {
             
         }
     }
-    
-    
+    /*
+    * Simulates the guess from the client and responds.
+    */    
     private Protocol getResult(Protocol guess){
         if(game == null)
             return null;
@@ -88,39 +89,54 @@ public class ClientHandler implements Runnable {
             result = game.next("You guessed: " + guess.getGuess() + " which was a miss");
         switch (result.getCommand()) {
             case GAMEOVER:
+                score = game.getScore();
                 game = null;
                 break;
             case CONGRATULATIONS:
+                score = game.getScore();
                 game = null;
                 break;
         }
         return result;
     }
+    /*
+    * Gives the user a new word.
+    */
     private void newWord(){
-        if(game.gameover){
-            score = game.getScore();
-            startGame();
+        if(game != null){
+           score--;
+           startGame();
         }
         else{
-            score--;
             startGame();
         }
     }
+    /*
+    * Restarts the game.
+    */
     private void restart(){
         score = 0;
         startGame();
     } 
+    /*
+    * Starts a new game.
+    */
     private void startGame(){
         game = new HangMan(score, getRandomWord());
         Protocol msg = new Protocol(Command.RESULT, score, game.getAttemptsLeft(), game.getState(), "Welcome to the hangman game, I wish you goodluck!");
         respond(msg);
     }
+    /*
+    * Gets a random word from our "library" of words.
+    */
     private String getRandomWord(){
         int i = random.nextInt(words.size());
-        System.out.println("Random word is: " + words.get(i));
-        return "PROGRAMMING";
+        System.out.println("The word is: " + words.get(i));
+        return words.get(i);
     }
-    
+    /*
+    * Tryes to setup in and out streams to the client connection.
+    */
     void setup(){
         try {
             in = new ObjectInputStream(clientSocket.getInputStream());
@@ -129,10 +145,11 @@ public class ClientHandler implements Runnable {
             System.out.println(e.toString());
             cleanUp();
             terminate();
-            return;
         }
     }
-    
+    /*
+    * Reads the inputstream for the client connection.
+    */
     Protocol read() throws BadProtocolException{
         Object msg;
         try {
@@ -160,8 +177,8 @@ public class ClientHandler implements Runnable {
     }
     
     /**
-     *
-     * @param msg
+     * Responds to client.
+     * @param msg msg to send to client
      */
     public void respond(Protocol msg){
         try {
@@ -175,7 +192,7 @@ public class ClientHandler implements Runnable {
     }
     
     /**
-     *
+     * Closes the client-connection.
      */
     public void cleanUp(){
         try {
@@ -188,7 +205,7 @@ public class ClientHandler implements Runnable {
     }
     
     /**
-     *
+     * Terminates this thread.
      */
     public void terminate(){
         this.running = false;

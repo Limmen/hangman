@@ -6,19 +6,16 @@
 package limmen.hangman_client.gui;
 
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
 
 /**
- *
+ * JFrame for that contains a form for connecting to a server
  * @author kim
  */
 public class ConnectFrame extends JFrame {
-    
-    private JPanel container;
-            
+                
     /**
-     *
+     * Class constructor.
      */
     public ConnectFrame(){
         this.setLayout(new MigLayout());

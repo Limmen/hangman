@@ -11,7 +11,6 @@ import java.net.Socket;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import javax.xml.transform.Result;
 import limmen.hangman.util.Command;
 import limmen.hangman.util.Protocol;
 import limmen.hangman_client.client.model.DisconnectWorker;
@@ -20,7 +19,7 @@ import limmen.hangman_client.client.model.WriteWorker;
 import net.miginfocom.swing.MigLayout;
 
 /**
- *
+ * JFrame that contains stuff to represent a HangMan game.
  * @author kim
  */
 public class GameFrame extends JFrame {
@@ -30,34 +29,37 @@ public class GameFrame extends JFrame {
     private GamePanel gamePanel;
     private ConnectedPanel connectedPanel;
     private LogPanel logPanel;
-    private String hostname;
-    private int port;
-    private Socket clientSocket;
-    private ObjectInputStream in;
-    private ObjectOutputStream out;
+    private final String hostname;
+    private final int port;
+    private final Socket serverSocket;
+    private final ObjectInputStream in;
+    private final ObjectOutputStream out;
     private ReadWorker readWorker;
     private WriteWorker writeWorker;
-    private ConnectFrame frame;
+    private final ConnectFrame frame;
     
     /**
-     *
-     * @param host
-     * @param port
-     * @param clientSocket
-     * @param in
-     * @param out
-     * @param frame
+     * Class constructor.
+     * @param host hostname
+     * @param port portnumber
+     * @param serverSocket socket connection to server
+     * @param in ObjectInputStream to server
+     * @param out ObjectOutputStream to server
+     * @param frame ConnectFrame, need to be shown when user disconnects
      */
-    public GameFrame(String host, int port, Socket clientSocket, ObjectInputStream in, ObjectOutputStream out, ConnectFrame frame){
+    public GameFrame(String host, int port, Socket serverSocket, ObjectInputStream in, ObjectOutputStream out, ConnectFrame frame){
         this.hostname = host;
         this.port = port;
-        this.clientSocket = clientSocket;
+        this.serverSocket = serverSocket;
         this.in = in;
         this.out = out;
         this.frame = frame;
         
         setup();        
     }
+    /*
+    * Creates the ui
+    */
     private void setup(){                        
         setLayout(new MigLayout());
         setTitle("HomeWork 1 ID2212 | Connect");
@@ -79,6 +81,9 @@ public class GameFrame extends JFrame {
         writeWorker = new WriteWorker(out, (Protocol) new Protocol(Command.START));
         writeWorker.execute();
     }
+    /*
+    * Creates the main container
+    */
     private void createContainer(){
         container = new JPanel(new MigLayout("wrap 3"));
         scorePanel = new ScorePanel(out, 0, 0);
@@ -92,10 +97,10 @@ public class GameFrame extends JFrame {
     }    
 
     /**
-     *
+     * Disconnect to server. Show connect-frame and dispose game-frame.
      */
     public void disconnect(){       
-            new DisconnectWorker(clientSocket, out, in).execute();
+            new DisconnectWorker(serverSocket, out, in).execute();
             frame.setVisible(true);
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
@@ -106,19 +111,20 @@ public class GameFrame extends JFrame {
     }
     
     /**
-     *
-     * @param msg
+     * Update game with new data (log, attemptsleft, score, wordstate)
+     * @param msg message received from server, contains game info.
      */
     public void updateGame(Protocol msg){
         logPanel.updateLog(msg.getLog());        
         scorePanel.updateScore(msg.getAttemptsLeft(), msg.getScore());
         gamePanel.updateGame(spacify(msg.getState()));
+        gamePanel.enableGuess();
         pack();        
     }
 
     /**
-     *
-     * @param msg
+     * Show congratulation message to user.
+     * @param msg message received from server, contains game info.
      */
     public void congratulations(Protocol msg){
         logPanel.updateLog(msg.getLog());
@@ -129,8 +135,8 @@ public class GameFrame extends JFrame {
     }
 
     /**
-     *
-     * @param msg
+     * Show gameover message to user.
+     * @param msg message received from server, contains game info.
      */
     public void gameOver(Protocol msg){        
         logPanel.updateLog(msg.getLog());
@@ -141,9 +147,9 @@ public class GameFrame extends JFrame {
     }
     
     /**
-     *
-     * @param word
-     * @return
+     * Insert spaces between the letters of a string.
+     * @param word String to spacify
+     * @return spacified string
      */
     public String spacify(String word){
         return word.replace("", " ").trim().toUpperCase();

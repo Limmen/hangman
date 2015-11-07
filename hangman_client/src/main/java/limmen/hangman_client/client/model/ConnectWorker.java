@@ -5,7 +5,6 @@
  */
 package limmen.hangman_client.client.model;
 
-import static java.awt.SystemColor.window;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -14,24 +13,26 @@ import java.rmi.UnknownHostException;
 import javax.swing.SwingWorker;
 import limmen.hangman_client.gui.ConnectPanel;
 
-/**
- *
+/** 
+ * A worker thread to connect to a server.
+ * Neccessary for not freezing the UI in case of network latency
  * @author kim
  */
 public class ConnectWorker extends SwingWorker<Socket, Socket> {
     
     private final int port;
     private final String host;
-    private Socket clientSocket;
+    private Socket serverSocket;
     private final ConnectPanel panel;
     private ObjectInputStream in;
     private ObjectOutputStream out = null; 
     
     /**
-     *
-     * @param panel
-     * @param port
-     * @param host
+     * Class constructor 
+     * panel is used to add UI-updates to the EDT after connected.
+     * @param panel panel used to add UI-updates to the EDT adter connected
+     * @param port portnumber
+     * @param host hostname
      */
     public ConnectWorker(ConnectPanel panel, int port, String host){
         this.port = port;
@@ -40,15 +41,15 @@ public class ConnectWorker extends SwingWorker<Socket, Socket> {
     }
 
     /**
-     *
-     * @return
+     * Here we try to connect to the server.
+     * @return serverSocket socket connection to the server
      * @throws Exception
      */
     @Override
     protected Socket doInBackground() throws Exception {        
         try
         {
-            clientSocket = new Socket(host,port);
+            serverSocket = new Socket(host,port);
         } catch (UnknownHostException e)
         {
             System.err.println("Don't know about host: " + host + ".");
@@ -60,20 +61,20 @@ public class ConnectWorker extends SwingWorker<Socket, Socket> {
             return null;
         }
         try{
-            out = new ObjectOutputStream(clientSocket.getOutputStream());
-            in = new ObjectInputStream(clientSocket.getInputStream());
+            out = new ObjectOutputStream(serverSocket.getOutputStream());
+            in = new ObjectInputStream(serverSocket.getInputStream());
         }
         catch(Exception e){
         }
-        return clientSocket;
+        return serverSocket;
     }
     
     /**
-     *
+     * Called when doInBackground() returns.
      */
     @Override
     protected void done()
     {
-        panel.connected(this.host, this.port, this.clientSocket, this.in, this.out);        
+        panel.connected(this.host, this.port, this.serverSocket, this.in, this.out);        
     }        
 }

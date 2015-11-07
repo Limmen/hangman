@@ -10,33 +10,32 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import javax.swing.SwingWorker;
-import limmen.hangman_client.gui.GameFrame;
-
 /**
- *
+ * Worker thread to disconnect from server
+ * Neccessary for not freezing the UI in case of network latency
  * @author kim
  */
 public class DisconnectWorker extends SwingWorker <Boolean, Integer> {
   
     private final ObjectOutputStream out;
     private final ObjectInputStream in;
-    private final Socket clientSocket;
+    private final Socket serverSocket;
     
     /**
-     *
-     * @param clientSocket
-     * @param out
-     * @param in
+     * Class constructor
+     * @param serverSocket socket connection to the server
+     * @param out ObjectOutput stream to the server
+     * @param in ObjectInputStream to the server
      */
-    public DisconnectWorker(Socket clientSocket, ObjectOutputStream out, ObjectInputStream in){
-        this.clientSocket = clientSocket;
+    public DisconnectWorker(Socket serverSocket, ObjectOutputStream out, ObjectInputStream in){
+        this.serverSocket = serverSocket;
         this.out = out;
         this.in = in;
     }
 
     /**
-     *
-     * @return
+     * Closing socket connection and the streams
+     * @return boolean wether the disconnection was successful or not.
      * @throws Exception
      */
     @Override
@@ -44,7 +43,7 @@ public class DisconnectWorker extends SwingWorker <Boolean, Integer> {
         try {
             out.close();
             in.close();
-            clientSocket.close();
+            serverSocket.close();
         } catch (IOException ioe) {
             return false;
         }

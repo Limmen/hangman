@@ -9,13 +9,14 @@ import javax.swing.SwingUtilities;
 import limmen.hangman_client.gui.ConnectFrame;
 
 /**
- *
+ * Startup class for HangMan-Client
  * @author kim
  */
 public class Startup {
     
     /**
-     *
+     * Mainmethod. Entry point of the program.
+     * Creates a frame for connecting to a server.
      * @param args
      */
     public static void main(String[] args){

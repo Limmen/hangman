@@ -12,34 +12,37 @@ import java.util.Scanner;
 import limmen.hangman_server.server.Listener;
 
 /**
- *
+ * Startup class for Hangman-Server
  * @author kim
  */
 public class Startup {
     
-    private static final ArrayList<String> words = new ArrayList<String>();
+    private static final ArrayList<String> words = new ArrayList();
 
     /**
-     *
+     * 
      */
     public Startup(){
         
     }
     
     /**
-     *
-     * @param args
+     * Main method and the entrypoint of the program.
+     * Reades /usr/share/dict/words and creates a arraylist of the words.
+     * @param args specifies port number. Optional.
      */
     public static void main(String[] args){
         try {
             Scanner s = new Scanner(new File("/usr/share/dict/words"));
             while (s.hasNextLine())
                 words.add(s.nextLine());
-            System.out.format("Read %d words\n", words.size());
         } catch (FileNotFoundException e) {
             e.printStackTrace(System.err);
         }
-        new Thread(new Listener(words)).start();
+        if(args.length < 1)
+            new Thread(new Listener(words)).start();
+        else
+            new Thread(new Listener(words, Integer.parseInt(args[0])));        
     }
     
 }

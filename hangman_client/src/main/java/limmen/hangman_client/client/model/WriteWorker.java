@@ -11,18 +11,18 @@ import javax.swing.SwingWorker;
 import limmen.hangman.util.Protocol;
 
 /**
- *
+ * Worker thread to write messages to server
  * @author kim
  */
 public class WriteWorker extends SwingWorker <Boolean, Integer> {
     
-    private ObjectOutputStream out = null;
+    private final ObjectOutputStream out;
     private final Protocol msg;
     
     /**
-     *
-     * @param msg
-     * @param out
+     * Class constructor. Sending msg to out.
+     * @param msg message to send to server
+     * @param out ObjectOutputStream to serverconnection
      */
     public WriteWorker(ObjectOutputStream out, Protocol msg){
         this.msg = msg;
@@ -30,8 +30,8 @@ public class WriteWorker extends SwingWorker <Boolean, Integer> {
     }
 
     /**
-     *
-     * @return
+     * Sends message to server
+     * @return boolean
      * @throws Exception
      */
     @Override
@@ -39,7 +39,9 @@ public class WriteWorker extends SwingWorker <Boolean, Integer> {
         respond(msg);
         return true;
     }
-    
+    /*
+    * Sends message through ObjectOutputStream to server
+    */
     private void respond(Protocol obj){
         try {
             out.writeObject(obj);

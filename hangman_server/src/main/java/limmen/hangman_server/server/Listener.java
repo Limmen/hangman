@@ -11,26 +11,39 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 /**
- *
+ * Listener class. Listens on a port and creates clienthandlers to handle
+ * the connections
  * @author kim
  */
 public class Listener implements Runnable {
 
     private ServerSocket serverSocket;
-    private int PORT = 9999;
+    private final int PORT;
     private boolean running;
     private final ArrayList<String> words;
     
     /**
-     *
-     * @param server
+     * Class constructor
+     * @param words list of words that the clienthandlers will use.
      */
     public Listener(ArrayList<String> words){
         this.words = words;
+        this.PORT = 9999;
     }
     
     /**
-     *
+     * Class constructor
+     * @param words list of words that the clienthandlers will use.
+     * @param port portnumber to listen on
+     */
+    public Listener(ArrayList<String> words, int port){
+        this.words = words;
+        this.PORT = port;
+    }
+    
+    /**
+     * Run method.
+     * Listen for a port and create clientHandlers
      */
     @Override
     public void run() {
@@ -52,7 +65,7 @@ public class Listener implements Runnable {
     }
     
     /**
-     *
+     * Cleansup the serversocket.
      */
     public void cleanUp(){
         try{
@@ -64,7 +77,7 @@ public class Listener implements Runnable {
     }
     
     /**
-     *
+     * Terminates this thread
      */
     public void terminate(){
         running = false;
