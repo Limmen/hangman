@@ -14,7 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import limmen.hangman.util.Command;
 import limmen.hangman.util.Protocol;
-import limmen.hangman_client.client.model.WriteWorker;
+import limmen.hangman_client.model.WriteWorker;
 import net.miginfocom.swing.MigLayout;
 
 /**
@@ -28,16 +28,16 @@ public class ScorePanel extends JPanel {
     
     private final JLabel attemptsLabel;
     private final JLabel scoreLabel;
-    private final ObjectOutputStream out;
+    private final Controller contr;
     
     /**
      * Class constructor
-     * @param out ObjectOutputStream to the server
+     * @param contr instance of Controller
      * @param attempts number of attempts left for the user
      * @param score current score between the user and server
      */
-    public ScorePanel(ObjectOutputStream out, int attempts, int score){
-        this.out = out;
+    public ScorePanel(Controller contr, int attempts, int score){
+        this.contr = contr;
         setLayout(new MigLayout("wrap 2"));
         JLabel lbl;        
         lbl = new JLabel("Attempts left: ");
@@ -54,21 +54,7 @@ public class ScorePanel extends JPanel {
         add(scoreLabel, "span 1");
         JButton restartButton = new JButton("Restart");
         restartButton.setFont(Title);
-        restartButton.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent arg0)
-            {
-                try {
-                    restart();
-                }
-                catch(Exception e)
-                {
-                    
-                }
-                
-            }
-        });        
+        restartButton.addActionListener(contr.new RestartListener());
         add(restartButton, "span 2");    
     }
 
@@ -81,10 +67,5 @@ public class ScorePanel extends JPanel {
         attemptsLabel.setText(Integer.toString(attempts));
         scoreLabel.setText(Integer.toString(score));
     }
-    /*
-    * Sends restart-request to the server
-    */
-    private void restart(){
-        new WriteWorker(out, (Protocol) new Protocol(Command.RESTART)).execute();
-    }
+
 }

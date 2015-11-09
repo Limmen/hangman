@@ -17,11 +17,12 @@ public class ConnectFrame extends JFrame {
                 
     /**
      * Class constructor.
+     * @param contr Controller instance
      */
-    public ConnectFrame(){
+    public ConnectFrame(Controller contr){
         this.setLayout(new MigLayout());
         this.setTitle("HomeWork 1 ID2212 | Connect");      
-        this.setContentPane(new JScrollPane(new ConnectPanel(this)));        
+        this.setContentPane(new JScrollPane(new ConnectPanel(contr)));        
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent)

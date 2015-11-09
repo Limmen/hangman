@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package limmen.hangman_client.client.model;
+package limmen.hangman_client.model;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

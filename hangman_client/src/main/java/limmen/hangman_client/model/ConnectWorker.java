@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package limmen.hangman_client.client.model;
+package limmen.hangman_client.model;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -11,7 +11,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.rmi.UnknownHostException;
 import javax.swing.SwingWorker;
-import limmen.hangman_client.gui.ConnectPanel;
+import limmen.hangman_client.gui.Controller;
 
 /** 
  * A worker thread to connect to a server.
@@ -23,21 +23,21 @@ public class ConnectWorker extends SwingWorker<Socket, Socket> {
     private final int port;
     private final String host;
     private Socket serverSocket;
-    private final ConnectPanel panel;
+    private final Controller contr;
     private ObjectInputStream in;
     private ObjectOutputStream out = null; 
     
     /**
      * Class constructor 
-     * panel is used to add UI-updates to the EDT after connected.
-     * @param panel panel used to add UI-updates to the EDT adter connected
+     * 
+     * @param contr Controller instance
      * @param port portnumber
      * @param host hostname
      */
-    public ConnectWorker(ConnectPanel panel, int port, String host){
+    public ConnectWorker(Controller contr, int port, String host){
         this.port = port;
         this.host = host;
-        this.panel = panel;
+        this.contr = contr;
     }
 
     /**
@@ -75,6 +75,6 @@ public class ConnectWorker extends SwingWorker<Socket, Socket> {
     @Override
     protected void done()
     {
-        panel.connected(this.host, this.port, this.serverSocket, this.in, this.out);        
+        contr.connected(this.host, this.port, this.serverSocket, this.in, this.out);        
     }        
 }

@@ -6,16 +6,11 @@
 package limmen.hangman_client.gui;
 
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.ObjectOutputStream;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import limmen.hangman.util.Command;
-import limmen.hangman.util.Protocol;
-import limmen.hangman_client.client.model.WriteWorker;
 import net.miginfocom.swing.MigLayout;
 
 /**
@@ -29,12 +24,15 @@ public class GamePanel extends JPanel {
     private final ObjectOutputStream out;
     private final JLabel wordLabel;
     private final JButton guessButton;    
+    private final Controller contr;
     /**
      * Class constructor
      * @param out ObjectOutputStream to server
      * @param word Current view of the word for the user
+     * @param contr
      */
-    public GamePanel(ObjectOutputStream out, String word){        
+    public GamePanel(ObjectOutputStream out, String word, Controller contr){        
+        this.contr = contr;
         this.out = out;
         setLayout(new MigLayout("wrap 1"));          
         JPanel hangManPanel = new JPanel(new MigLayout("wrap 1"));
@@ -47,59 +45,16 @@ public class GamePanel extends JPanel {
         guessPanel.add(guessField, "span 1");
         guessButton = new JButton("Guess");
         guessButton.setFont(Title);
-        guessButton.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent arg0)
-            {
-                try {  
-                    if(guessField.getText().length() > 0){
-                        makeGuess(guessField.getText());
-                        guessField.setText("");
-                    }
-                }
-                catch(Exception e)
-                {
-                    
-                }
-                
-            }
-        });        
+        guessButton.addActionListener(contr.new GuessListener(guessField));
         guessPanel.add(guessButton, "span 1");
         JButton newWordButton = new JButton("New word");
         newWordButton.setFont(Title);
-        newWordButton.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent arg0)
-            {
-                try {  
-                    newWord();
-                }
-                catch(Exception e)
-                {
-                    
-                }
-                
-            }
-        });        
+        newWordButton.addActionListener(contr.new NewWordListener());
         guessPanel.add(newWordButton, "span 1");  
         add(hangManPanel, "span 1");
         add(guessPanel, "span 1, gaptop 60");
     }
-    /*
-    * Send guess to server
-    */
-    private void makeGuess(String guess){
-        new WriteWorker(out, (Protocol) new Protocol(Command.GUESS, guess)).execute();
-    }
-    /*
-    * Send request for a new word to server
-    */
-    private void newWord(){
-        new WriteWorker(out, (Protocol) new Protocol(Command.NEWWORD)).execute();
-    }
-
+    
     /**
      * Update UI with new word
      * @param word word to update the UI with

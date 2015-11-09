@@ -14,9 +14,9 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import limmen.hangman.util.Command;
 import limmen.hangman.util.Protocol;
-import limmen.hangman_client.client.model.DisconnectWorker;
-import limmen.hangman_client.client.model.ReadWorker;
-import limmen.hangman_client.client.model.WriteWorker;
+import limmen.hangman_client.model.DisconnectWorker;
+import limmen.hangman_client.model.ReadWorker;
+import limmen.hangman_client.model.WriteWorker;
 import net.miginfocom.swing.MigLayout;
 
 /**
@@ -37,24 +37,24 @@ public class GameFrame extends JFrame {
     private final ObjectOutputStream out;
     private ReadWorker readWorker;
     private WriteWorker writeWorker;
-    private final ConnectFrame frame;
+    private final Controller contr;
     
     /**
      * Class constructor.
+     * @param contr
      * @param host hostname
      * @param port portnumber
      * @param serverSocket socket connection to server
      * @param in ObjectInputStream to server
      * @param out ObjectOutputStream to server
-     * @param frame ConnectFrame, need to be shown when user disconnects
      */
-    public GameFrame(String host, int port, Socket serverSocket, ObjectInputStream in, ObjectOutputStream out, ConnectFrame frame){
+    public GameFrame(Controller contr, String host, int port, Socket serverSocket, ObjectInputStream in, ObjectOutputStream out){
         this.hostname = host;
         this.port = port;
         this.serverSocket = serverSocket;
         this.in = in;
         this.out = out;
-        this.frame = frame;
+        this.contr = contr;
         
         setup();        
     }
@@ -87,9 +87,9 @@ public class GameFrame extends JFrame {
     */
     private void createContainer(){
         container = new JPanel(new MigLayout("wrap 3, insets 50 50 50 50")); //insets T,L,B,R
-        scorePanel = new ScorePanel(out, 0, 0);
-        gamePanel = new GamePanel(out, "");
-        connectedPanel = new ConnectedPanel(hostname, port, this);
+        scorePanel = new ScorePanel(contr, 0, 0);
+        gamePanel = new GamePanel(out, "", contr);
+        connectedPanel = new ConnectedPanel(hostname, port, contr);
         logPanel = new LogPanel();        
         container.add(gamePanel, "span 3, align center, gaptop 50");
         container.add(connectedPanel, "span 1, gapbottom 50");
@@ -102,7 +102,6 @@ public class GameFrame extends JFrame {
      */
     public void disconnect(){       
             new DisconnectWorker(serverSocket, out, in).execute();
-            frame.setVisible(true);
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
@@ -154,5 +153,9 @@ public class GameFrame extends JFrame {
      */
     public String spacify(String word){
         return word.replace("", " ").trim().toUpperCase();
+    }
+    
+    ObjectOutputStream getOutputStream(){
+        return this.out;
     }
 }

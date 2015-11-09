@@ -5,8 +5,7 @@
  */
 package limmen.hangman_client.startup;
 
-import javax.swing.SwingUtilities;
-import limmen.hangman_client.gui.ConnectFrame;
+import limmen.hangman_client.gui.Controller;
 
 /**
  * Startup class for HangMan-Client
@@ -14,18 +13,14 @@ import limmen.hangman_client.gui.ConnectFrame;
  */
 public class Startup {
     
+    private static Controller contr;
     /**
      * Mainmethod. Entry point of the program.
      * Creates a frame for connecting to a server.
      * @param args
      */
     public static void main(String[] args){
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new ConnectFrame();
-            }
-        });
+        contr = new Controller();
     }
     
 }

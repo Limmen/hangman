@@ -6,8 +6,6 @@
 package limmen.hangman_client.gui;
 
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -22,16 +20,16 @@ public class ConnectedPanel extends JPanel {
     private final Font Title = new Font("Serif", Font.PLAIN, 10);
     private final Font PBold = Plain.deriveFont(Plain.getStyle() | Font.BOLD);
     
-    private final GameFrame frame;
+    private final Controller contr;
     
     /**
      * Class constructor.
      * @param hostname hostname
      * @param port portnumber
-     * @param frame Frame for sending UI-updates if user disconnects.
+     * @param contr Controller instance
      */
-    public ConnectedPanel(String hostname, int port, GameFrame frame){
-        this.frame = frame;
+    public ConnectedPanel(String hostname, int port, Controller contr){
+        this.contr = contr;
         setLayout(new MigLayout("wrap 2"));
         JLabel lbl;        
         lbl = new JLabel("Host: ");
@@ -48,25 +46,8 @@ public class ConnectedPanel extends JPanel {
         add(lbl, "span 1");
         JButton disconnect = new JButton("Disconnect");
         disconnect.setFont(Title);
-        disconnect.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent arg0)
-            {
-                try {
-                    disconnect();
-                }
-                catch(Exception e)
-                {
-                    
-                }
-                
-            }
-        });
+        disconnect.addActionListener(contr.new DisconnectListener());
         add(disconnect, "span 2, gaptop 5");
-    }
-    private void disconnect(){
-        frame.disconnect();
     }
     
 }
