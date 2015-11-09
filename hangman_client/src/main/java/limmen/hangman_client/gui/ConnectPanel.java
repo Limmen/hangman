@@ -40,17 +40,17 @@ public class ConnectPanel extends JPanel {
      */
     public ConnectPanel(ConnectFrame frame){
         this.frame = frame;
-        setLayout(new MigLayout("wrap 2"));
+        setLayout(new MigLayout("wrap 2, insets 50 50 50 50"));  //insets T, L, B, R
         JLabel lbl;
         lbl = new JLabel("host: ");
         lbl.setFont(PBold);
-        add(lbl, "span 1, gapleft 50, gaptop 50");
+        add(lbl, "span 1");
         hostField = new JTextField(25);
         hostField.setFont(Plain);
-        add(hostField, "span 1, gaptop 50");
+        add(hostField, "span 1");
         lbl = new JLabel("port: ");
         lbl.setFont(PBold);
-        add(lbl, "span 1, gapleft 50");
+        add(lbl, "span 1");
         portField = new JTextField(25);
         portField.setFont(Plain);
         add(portField);
@@ -71,7 +71,7 @@ public class ConnectPanel extends JPanel {
                 
             }
         });        
-        add(connectButton, "span 2, gaptop 5, gapleft 50");
+        add(connectButton, "span 2, gaptop 5");
     }
     
     private void connect(String host, int port){

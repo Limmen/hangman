@@ -23,8 +23,8 @@ import net.miginfocom.swing.MigLayout;
  * @author kim
  */
 public class GamePanel extends JPanel {
-    private final Font Plain = new Font("Serif", Font.PLAIN, 12);
-    private final Font Title = new Font("Serif", Font.PLAIN, 14);
+    private final Font Plain = new Font("Serif", Font.PLAIN, 13);
+    private final Font Title = new Font("Serif", Font.PLAIN, 15);
     private final Font Word = new Font("Serif", Font.PLAIN, 25);    
     private final ObjectOutputStream out;
     private final JLabel wordLabel;

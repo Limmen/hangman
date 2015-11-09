@@ -6,6 +6,7 @@
 package limmen.hangman_client.gui;
 
 import javax.swing.JFrame;
+import javax.swing.JScrollPane;
 import net.miginfocom.swing.MigLayout;
 
 /**
@@ -19,9 +20,8 @@ public class ConnectFrame extends JFrame {
      */
     public ConnectFrame(){
         this.setLayout(new MigLayout());
-        this.setTitle("HomeWork 1 ID2212 | Connect");
-        this.setContentPane(new ConnectPanel(this));
-        
+        this.setTitle("HomeWork 1 ID2212 | Connect");      
+        this.setContentPane(new JScrollPane(new ConnectPanel(this)));        
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent)

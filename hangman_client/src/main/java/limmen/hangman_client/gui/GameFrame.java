@@ -10,6 +10,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import limmen.hangman.util.Command;
 import limmen.hangman.util.Protocol;
@@ -64,7 +65,7 @@ public class GameFrame extends JFrame {
         setLayout(new MigLayout());
         setTitle("HomeWork 1 ID2212 | Connect");
         createContainer();
-        setContentPane(container);
+        setContentPane(new JScrollPane(container));
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent)
@@ -85,7 +86,7 @@ public class GameFrame extends JFrame {
     * Creates the main container
     */
     private void createContainer(){
-        container = new JPanel(new MigLayout("wrap 3"));
+        container = new JPanel(new MigLayout("wrap 3, insets 50 50 50 50")); //insets T,L,B,R
         scorePanel = new ScorePanel(out, 0, 0);
         gamePanel = new GamePanel(out, "");
         connectedPanel = new ConnectedPanel(hostname, port, this);

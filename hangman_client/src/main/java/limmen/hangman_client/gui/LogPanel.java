@@ -21,7 +21,7 @@ import net.miginfocom.swing.MigLayout;
  * @author kim
  */
 public class LogPanel extends JPanel {
-    private final Font Plain = new Font("Serif", Font.PLAIN, 12);    
+    private final Font Plain = new Font("Serif", Font.PLAIN, 10);    
     private JTextArea log;
     
     /**
