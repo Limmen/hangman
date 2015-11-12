@@ -14,14 +14,13 @@ import net.miginfocom.swing.MigLayout;
  * @author kim
  */
 public class ConnectFrame extends JFrame {
-                
     /**
      * Class constructor.
      * @param contr Controller instance
      */
     public ConnectFrame(Controller contr){
         this.setLayout(new MigLayout());
-        this.setTitle("HomeWork 1 ID2212 | Connect");      
+        this.setTitle("HomeWork 1 ID2212 | Connect"); 
         this.setContentPane(new JScrollPane(new ConnectPanel(contr)));        
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
@@ -33,9 +32,5 @@ public class ConnectFrame extends JFrame {
         pack();
         setLocationRelativeTo(null);    // centers on screen
         setVisible(true);      
-    }
-    
-    
-    
- 
+    }                 
 }

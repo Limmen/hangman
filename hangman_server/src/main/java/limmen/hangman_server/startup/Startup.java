@@ -1,8 +1,8 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+* To change this license header, choose License Headers in Project Properties.
+* To change this template file, choose Tools | Templates
+* and open the template in the editor.
+*/
 package limmen.hangman_server.startup;
 
 import java.io.File;
@@ -18,9 +18,9 @@ import limmen.hangman_server.server.Listener;
 public class Startup {
     
     private static final ArrayList<String> words = new ArrayList();
-
+    
     /**
-     * 
+     *
      */
     public Startup(){
         
@@ -31,6 +31,7 @@ public class Startup {
      * Reades /usr/share/dict/words and creates a arraylist of the words.
      * @param args specifies port number. Optional.
      */
+    @SuppressWarnings("ResultOfObjectAllocationIgnored")
     public static void main(String[] args){
         try {
             Scanner s = new Scanner(new File("/usr/share/dict/words"));
@@ -42,7 +43,7 @@ public class Startup {
         if(args.length < 1)
             new Thread(new Listener(words)).start();
         else
-            new Thread(new Listener(words, Integer.parseInt(args[0])));        
+            new Thread(new Listener(words, Integer.parseInt(args[0])));
     }
     
 }

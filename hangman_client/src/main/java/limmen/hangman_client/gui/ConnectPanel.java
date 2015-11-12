@@ -10,7 +10,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import limmen.hangman_client.model.ConnectWorker;
 import limmen.hangman_client.gui.Controller.ConnectListener;
 import net.miginfocom.swing.MigLayout;
 

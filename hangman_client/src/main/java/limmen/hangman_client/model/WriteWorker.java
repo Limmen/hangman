@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import javax.swing.SwingWorker;
 import limmen.hangman.util.Protocol;
+import limmen.hangman_client.gui.Controller;
 
 /**
  * Worker thread to write messages to server
@@ -18,13 +19,16 @@ public class WriteWorker extends SwingWorker <Boolean, Integer> {
     
     private final ObjectOutputStream out;
     private final Protocol msg;
+    private final Controller contr;
     
     /**
      * Class constructor. Sending msg to out.
      * @param msg message to send to server
      * @param out ObjectOutputStream to serverconnection
+     * @param contr Controller instance
      */
-    public WriteWorker(ObjectOutputStream out, Protocol msg){
+    public WriteWorker(ObjectOutputStream out, Protocol msg, Controller contr){
+        this.contr = contr;
         this.msg = msg;
         this.out = out;
     }
@@ -47,7 +51,7 @@ public class WriteWorker extends SwingWorker <Boolean, Integer> {
             out.writeObject(obj);
             out.flush();
         } catch (IOException e) {
-            System.out.println(e.toString());
+            contr.connectionWasLost();
         }
     }
 

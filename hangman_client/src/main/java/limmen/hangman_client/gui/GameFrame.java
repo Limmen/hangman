@@ -77,9 +77,9 @@ public class GameFrame extends JFrame {
         setLocationRelativeTo(null);    // centers on screen
         setVisible(true);
         
-        readWorker = new ReadWorker(in, this);
+        readWorker = new ReadWorker(in, this, contr);
         readWorker.execute();
-        writeWorker = new WriteWorker(out, (Protocol) new Protocol(Command.START));
+        writeWorker = new WriteWorker(out, (Protocol) new Protocol(Command.START), contr);
         writeWorker.execute();
     }
     /*

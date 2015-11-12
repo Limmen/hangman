@@ -53,6 +53,7 @@ public class ClientHandler implements Runnable {
         while(running){
             try{
                 Protocol msg = read();
+                //sleep(5); //simulate network latency
                 if(msg != null){
                     switch (msg.getCommand()) {
                         case START:
@@ -209,6 +210,16 @@ public class ClientHandler implements Runnable {
      */
     public void terminate(){
         this.running = false;
+    }
+    /*
+    * For simulating network latency
+    */
+    public void sleep(int seconds){
+        try {
+            Thread.sleep(1000 * seconds);       
+        } catch(InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
     }
     
 }

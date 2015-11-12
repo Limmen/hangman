@@ -25,7 +25,8 @@ public class LogPanel extends JPanel {
     private JTextArea log;
     
     /**
-     *
+     * Class constructor. Creates a JPanel containing of a scrollable
+     * game-log.
      */
     public LogPanel(){
         setLayout(new MigLayout("wrap 1"));

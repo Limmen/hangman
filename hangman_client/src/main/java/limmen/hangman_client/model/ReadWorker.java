@@ -12,6 +12,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import limmen.hangman.util.BadProtocolException;
 import limmen.hangman.util.Protocol;
+import limmen.hangman_client.gui.Controller;
 import limmen.hangman_client.gui.GameFrame;
 
 /**
@@ -25,14 +26,17 @@ public class ReadWorker extends SwingWorker <Boolean, Integer> {
     private boolean running;
     private final GameFrame frame;
     private Protocol msg;
+    private Controller contr;
     
     /**
      * Class constructor.
      * Frame is neccessary for updating the UI later.
      * @param in ObjectInputStream to the socket connection
      * @param frame JFrame for adding UI-updated to EDT when neccessary
+     * @param contr Controller instance. 
      */
-    public ReadWorker(ObjectInputStream in, GameFrame frame){
+    public ReadWorker(ObjectInputStream in, GameFrame frame, Controller contr){
+        this.contr = contr;
         this.in = in;
         this.frame = frame;
     }
@@ -78,7 +82,7 @@ public class ReadWorker extends SwingWorker <Boolean, Integer> {
                 }
             }
             catch(BadProtocolException e){
-                return false;
+                contr.connectionWasLost();
             }
         }
         
@@ -93,12 +97,15 @@ public class ReadWorker extends SwingWorker <Boolean, Integer> {
         try {
             input = in.readObject();
         } catch (ClassNotFoundException cnfe) {
+            contr.connectionWasLost();
             running = false;
             return null;
         } catch (OptionalDataException ode) {
+            contr.connectionWasLost();
             running = false;
             return null;
         } catch (IOException ioe) {
+            contr.connectionWasLost();
             running = false;
             return null;
         }
