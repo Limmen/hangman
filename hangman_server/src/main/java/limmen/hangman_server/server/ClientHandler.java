@@ -201,7 +201,7 @@ public class ClientHandler implements Runnable {
             in.close();
             clientSocket.close();
         } catch (IOException ioe) {
-            
+            running = false;
         }
     }
     
@@ -209,7 +209,7 @@ public class ClientHandler implements Runnable {
      * Terminates this thread.
      */
     public void terminate(){
-        this.running = false;
+        running = false;
     }
     /*
     * For simulating network latency

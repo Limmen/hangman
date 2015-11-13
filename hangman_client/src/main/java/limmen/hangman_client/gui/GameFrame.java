@@ -63,7 +63,7 @@ public class GameFrame extends JFrame {
     */
     private void setup(){                        
         setLayout(new MigLayout());
-        setTitle("HomeWork 1 ID2212 | Connect");
+        setTitle("HomeWork 1 ID2212 | HangMan game");
         createContainer();
         setContentPane(new JScrollPane(container));
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -100,14 +100,15 @@ public class GameFrame extends JFrame {
     /**
      * Disconnect to server. Show connect-frame and dispose game-frame.
      */
-    public void disconnect(){       
-            new DisconnectWorker(serverSocket, out, in).execute();
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    dispose();
-                }
-            });
+    public void disconnect(){
+        readWorker.cancel(true);
+        new DisconnectWorker(serverSocket, out, in).execute();
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                dispose();
+            }
+        });
     }
     
     /**

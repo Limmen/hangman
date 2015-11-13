@@ -65,14 +65,14 @@ public class Listener implements Runnable {
     }
     
     /**
-     * Cleansup the serversocket.
+     * Clean up the serversocket.
      */
     public void cleanUp(){
         try{
             serverSocket.close();   
         }
         catch(Exception e){
-            e.printStackTrace();
+            running = false;
         }
     }
     

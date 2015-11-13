@@ -26,14 +26,14 @@ public class ReadWorker extends SwingWorker <Boolean, Integer> {
     private boolean running;
     private final GameFrame frame;
     private Protocol msg;
-    private Controller contr;
+    private final Controller contr;
     
     /**
      * Class constructor.
      * Frame is neccessary for updating the UI later.
      * @param in ObjectInputStream to the socket connection
      * @param frame JFrame for adding UI-updated to EDT when neccessary
-     * @param contr Controller instance. 
+     * @param contr Controller instance.
      */
     public ReadWorker(ObjectInputStream in, GameFrame frame, Controller contr){
         this.contr = contr;
@@ -43,7 +43,7 @@ public class ReadWorker extends SwingWorker <Boolean, Integer> {
     
     /**
      * Loop-read a inputstream and add events to EDT when neccessary
-     * @return boolean 
+     * @return boolean
      * @throws Exception
      */
     @Override
@@ -52,6 +52,10 @@ public class ReadWorker extends SwingWorker <Boolean, Integer> {
         while(running){
             try{
                 msg = read();
+                if(isCancelled()){
+                    terminate();
+                    return false;
+                }
                 if(msg != null){
                     switch (msg.getCommand()) {
                         case RESULT:
@@ -82,7 +86,12 @@ public class ReadWorker extends SwingWorker <Boolean, Integer> {
                 }
             }
             catch(BadProtocolException e){
-                contr.connectionWasLost();
+                if(isCancelled()){
+                    terminate();
+                    return false;
+                }else{
+                    contr.connectionWasLost();
+                }
             }
         }
         
@@ -97,17 +106,32 @@ public class ReadWorker extends SwingWorker <Boolean, Integer> {
         try {
             input = in.readObject();
         } catch (ClassNotFoundException cnfe) {
-            contr.connectionWasLost();
-            running = false;
-            return null;
+            if(isCancelled()){
+                terminate();
+                return null;
+            }else{
+                contr.connectionWasLost();
+                running = false;
+                return null;
+            }
         } catch (OptionalDataException ode) {
-            contr.connectionWasLost();
-            running = false;
-            return null;
+            if(isCancelled()){
+                terminate();
+                return null;
+            }else{
+                contr.connectionWasLost();
+                running = false;
+                return null;
+            }
         } catch (IOException ioe) {
-            contr.connectionWasLost();
-            running = false;
-            return null;
+            if(isCancelled()){
+                terminate();
+                return null;
+            }else{
+                contr.connectionWasLost();
+                running = false;
+                return null;
+            }
         }
         if (input instanceof Protocol) {
             return (Protocol) input;
@@ -115,6 +139,10 @@ public class ReadWorker extends SwingWorker <Boolean, Integer> {
         else{
             throw new BadProtocolException();
         }
+    }
+    private void terminate(){
+        System.out.println("reader terminating");
+        running = false;
     }
     
 }
